@@ -22,6 +22,15 @@ class ApiService {
     return jsonDecode(response.body);
   }
 
+  static Future<Map<String, dynamic>> resetPassword(String email, String newPassword) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl?action=reset_password'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'email': email, 'new_password': newPassword}),
+    );
+    return jsonDecode(response.body);
+  }
+
   static Future<Map<String, dynamic>> fetchReviews() async {
     final response = await http.get(Uri.parse('$baseUrl?action=reviews'));
     return jsonDecode(response.body);
@@ -45,6 +54,11 @@ class ApiService {
         'comment': comment,
       }),
     );
+    return jsonDecode(response.body);
+  }
+
+  static Future<Map<String, dynamic>> deleteReview(int reviewId, int adminUserId) async {
+    final response = await http.delete(Uri.parse('$baseUrl?action=delete_review&id=$reviewId&user_id=$adminUserId'));
     return jsonDecode(response.body);
   }
 
@@ -217,6 +231,7 @@ class ApiService {
     required double transportCost,
     required double hotelCost,
     required double mealCost,
+    double budget = 0.0,
   }) async {
     final response = await http.post(
       Uri.parse('$baseUrl?action=update_trip_expenses'),
@@ -226,6 +241,7 @@ class ApiService {
         'transport_cost': transportCost,
         'hotel_cost': hotelCost,
         'meal_cost': mealCost,
+        'budget': budget,
       }),
     );
     return jsonDecode(response.body);

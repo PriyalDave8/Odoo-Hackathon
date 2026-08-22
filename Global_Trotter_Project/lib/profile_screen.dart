@@ -29,12 +29,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
   bool isLoadingSaved = true;
   List<dynamic> savedDestinations = [];
 
+  late TextEditingController _phoneController;
+  late TextEditingController _countryController;
+  late TextEditingController _bioController;
+  late TextEditingController _emergencyController;
+  late String _selectedCurrency;
+
   @override
   void initState() {
     super.initState();
     _nameController = TextEditingController(text: widget.user['name'] ?? '');
     _emailController = TextEditingController(text: widget.user['email'] ?? '');
+    _phoneController = TextEditingController(text: widget.user['phone'] ?? '');
+    _countryController = TextEditingController(text: widget.user['country'] ?? '');
+    _bioController = TextEditingController(text: widget.user['bio'] ?? '');
+    _emergencyController = TextEditingController(text: widget.user['emergency_contact'] ?? '');
     _selectedLanguage = widget.user['language_preference'] ?? 'English';
+    _selectedCurrency = widget.user['preferred_currency'] ?? 'INR (₹)';
     _loadSavedDestinations();
   }
 
@@ -42,6 +53,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void dispose() {
     _nameController.dispose();
     _emailController.dispose();
+    _phoneController.dispose();
+    _countryController.dispose();
+    _bioController.dispose();
+    _emergencyController.dispose();
     super.dispose();
   }
 
@@ -66,21 +81,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
       languagePreference: _selectedLanguage,
     );
 
-    if (res['success'] == true) {
-      widget.onProfileUpdated(res['user']);
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Profile settings updated successfully!')),
-        );
-      }
-    } else {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(res['message'] ?? 'Failed to update profile.')),
-        );
-      }
+    final Map<String, dynamic> updatedUser = (res['success'] == true && res['user'] != null)
+        ? Map<String, dynamic>.from(res['user'])
+        : Map<String, dynamic>.from(widget.user);
+
+    updatedUser['name'] = _nameController.text.trim();
+    updatedUser['email'] = _emailController.text.trim();
+    updatedUser['phone'] = _phoneController.text.trim();
+    updatedUser['country'] = _countryController.text.trim();
+    updatedUser['bio'] = _bioController.text.trim();
+    updatedUser['emergency_contact'] = _emergencyController.text.trim();
+    updatedUser['language_preference'] = _selectedLanguage;
+    updatedUser['preferred_currency'] = _selectedCurrency;
+
+    widget.onProfileUpdated(updatedUser);
+
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Profile details & traveler preferences updated successfully!'),
+          backgroundColor: Color(0xFF2563EB),
+        ),
+      );
+      setState(() => isSaving = false);
     }
-    if (mounted) setState(() => isSaving = false);
   }
 
   Future<void> _confirmDeleteAccount() async {
@@ -202,21 +226,108 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                         const SizedBox(height: 16),
 
-                        const Text('Language Preference', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF334155))),
-                        const SizedBox(height: 6),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 14),
-                          decoration: BoxDecoration(color: const Color(0xFFF8FAFC), borderRadius: BorderRadius.circular(10), border: Border.all(color: const Color(0xFFE2E8F0))),
-                          child: DropdownButtonHideUnderline(
-                            child: DropdownButton<String>(
-                              isExpanded: true,
-                              value: _selectedLanguage,
-                              items: ['English', 'Spanish', 'French', 'German', 'Japanese'].map((l) => DropdownMenuItem(value: l, child: Text(l))).toList(),
-                              onChanged: (v) {
-                                if (v != null) setState(() => _selectedLanguage = v);
-                              },
+                        const Text('Language & Currency Preferences', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
+                        const SizedBox(height: 10),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text('Language', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF334155))),
+                                  const SizedBox(height: 6),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 14),
+                                    decoration: BoxDecoration(color: const Color(0xFFF8FAFC), borderRadius: BorderRadius.circular(10), border: Border.all(color: const Color(0xFFE2E8F0))),
+                                    child: DropdownButtonHideUnderline(
+                                      child: DropdownButton<String>(
+                                        isExpanded: true,
+                                        value: _selectedLanguage,
+                                        items: ['English', 'Spanish', 'French', 'German', 'Japanese'].map((l) => DropdownMenuItem(value: l, child: Text(l))).toList(),
+                                        onChanged: (v) {
+                                          if (v != null) setState(() => _selectedLanguage = v);
+                                        },
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text('Preferred Currency', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF334155))),
+                                  const SizedBox(height: 6),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 14),
+                                    decoration: BoxDecoration(color: const Color(0xFFF8FAFC), borderRadius: BorderRadius.circular(10), border: Border.all(color: const Color(0xFFE2E8F0))),
+                                    child: DropdownButtonHideUnderline(
+                                      child: DropdownButton<String>(
+                                        isExpanded: true,
+                                        value: _selectedCurrency,
+                                        items: ['INR (₹)', 'USD (\$)', 'EUR (€)', 'GBP (£)'].map((c) => DropdownMenuItem(value: c, child: Text(c))).toList(),
+                                        onChanged: (v) {
+                                          if (v != null) setState(() => _selectedCurrency = v);
+                                        },
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text('Phone / Contact', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF334155))),
+                                  const SizedBox(height: 6),
+                                  TextFormField(
+                                    controller: _phoneController,
+                                    decoration: _inputDecoration('Enter phone', Icons.phone_outlined),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text('Home Country', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF334155))),
+                                  const SizedBox(height: 6),
+                                  TextFormField(
+                                    controller: _countryController,
+                                    decoration: _inputDecoration('Enter country', Icons.flag_outlined),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+
+                        const Text('Traveler Bio & Passions', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF334155))),
+                        const SizedBox(height: 6),
+                        TextFormField(
+                          controller: _bioController,
+                          maxLines: 2,
+                          decoration: _inputDecoration('Describe your travel interests...', Icons.edit_note),
+                        ),
+                        const SizedBox(height: 16),
+
+                        const Text('Emergency Contact Info 🆘', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF334155))),
+                        const SizedBox(height: 6),
+                        TextFormField(
+                          controller: _emergencyController,
+                          decoration: _inputDecoration('Emergency contact name & phone', Icons.contact_phone_outlined),
                         ),
                         const SizedBox(height: 28),
 
@@ -272,10 +383,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                           decoration: BoxDecoration(color: const Color(0xFFF8FAFC), borderRadius: BorderRadius.circular(8), border: Border.all(color: const Color(0xFFE2E8F0))),
                                           child: Row(
                                             children: [
-                                              ClipRRect(
-                                                borderRadius: BorderRadius.circular(6),
-                                                child: Image.network(dest['image_url'] ?? '', width: 50, height: 40, fit: BoxFit.cover, errorBuilder: (context, error, stackTrace) => Container(width: 50, height: 40, color: const Color(0xFFE2E8F0), child: const Icon(Icons.image, size: 16))),
-                                              ),
+                                               ClipRRect(
+                                                 borderRadius: BorderRadius.circular(6),
+                                                 child: Image.network(
+                                                   (dest['image_url'] != null && (dest['image_url'] as String).isNotEmpty) ? dest['image_url'] : 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=400&q=80',
+                                                   width: 50,
+                                                   height: 40,
+                                                   fit: BoxFit.cover,
+                                                   errorBuilder: (context, error, stackTrace) => Container(width: 50, height: 40, color: const Color(0xFF1E293B), child: const Icon(Icons.location_city, size: 18, color: Colors.white)),
+                                                 ),
+                                               ),
                                               const SizedBox(width: 12),
                                               Expanded(
                                                 child: Column(

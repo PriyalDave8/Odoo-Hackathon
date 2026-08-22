@@ -194,8 +194,55 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
     );
   }
 
+  Future<void> _deleteReview(int reviewId) async {
+    final bool? confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Row(
+          children: [
+            Icon(Icons.warning_amber_rounded, color: Color(0xFFDC2626)),
+            SizedBox(width: 8),
+            Text('Delete Review Comment?'),
+          ],
+        ),
+        content: const Text('Are you sure you want to delete this traveler review comment? This action cannot be undone.'),
+        actions: [
+          OutlinedButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFDC2626), foregroundColor: Colors.white),
+            child: const Text('Delete Review 🗑️'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm == true) {
+      final res = await ApiService.deleteReview(reviewId, widget.user['id']);
+      if (res['success'] == true) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Review comment deleted successfully!'),
+              backgroundColor: Color(0xFFDC2626),
+            ),
+          );
+        }
+        _loadReviews();
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(res['message'] ?? 'Failed to delete review.')),
+          );
+        }
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final bool isAdmin = (widget.user['is_admin'] == 1 || widget.user['role'] == 'admin');
+
     return SingleChildScrollView(
       padding: const EdgeInsets.all(32.0),
       child: Column(
@@ -294,7 +341,18 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
           ),
           const SizedBox(height: 32),
 
-          const Text('Traveler Reviews Feed', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text('Traveler Reviews Feed', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
+              if (isAdmin)
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  decoration: BoxDecoration(color: const Color(0xFFFEF2F2), borderRadius: BorderRadius.circular(6), border: Border.all(color: const Color(0xFFFCA5A5))),
+                  child: const Text('Admin Rights Enabled: Delete Comments Active 👑', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Color(0xFFDC2626))),
+                ),
+            ],
+          ),
           const SizedBox(height: 16),
 
           isLoading
@@ -307,6 +365,7 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                   itemBuilder: (context, index) {
                     final rev = Map<String, dynamic>.from(reviews[index]);
                     final int rating = (rev['rating'] as num?)?.toInt() ?? 5;
+                    final int reviewId = (rev['id'] as num?)?.toInt() ?? 0;
 
                     return Container(
                       padding: const EdgeInsets.all(20),
@@ -345,6 +404,19 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                                   ),
                                 ),
                               ),
+                              if (isAdmin && reviewId > 0) ...[
+                                const SizedBox(width: 12),
+                                OutlinedButton.icon(
+                                  onPressed: () => _deleteReview(reviewId),
+                                  icon: const Icon(Icons.delete_outline, size: 14),
+                                  label: const Text('Delete Comment', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
+                                  style: OutlinedButton.styleFrom(
+                                    foregroundColor: const Color(0xFFDC2626),
+                                    side: const BorderSide(color: Color(0xFFFCA5A5)),
+                                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                                  ),
+                                ),
+                              ],
                             ],
                           ),
                           const SizedBox(height: 14),
