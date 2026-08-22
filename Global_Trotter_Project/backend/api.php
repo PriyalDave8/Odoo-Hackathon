@@ -83,6 +83,37 @@ if ($action === 'login' && $method === 'POST') {
     exit();
 }
 
+if ($action === 'reset_password' && $method === 'POST') {
+    $email = trim($data['email'] ?? '');
+    $newPassword = trim($data['new_password'] ?? '');
+
+    if (empty($email) || empty($newPassword)) {
+        http_response_code(400);
+        echo json_encode(["success" => false, "message" => "Email and new password are required."]);
+        exit();
+    }
+
+    $stmt = $pdo->prepare("SELECT id FROM users WHERE email = ?");
+    $stmt->execute([$email]);
+    $user = $stmt->fetch();
+
+    if (!$user) {
+        http_response_code(404);
+        echo json_encode(["success" => false, "message" => "Account not found with this email address."]);
+        exit();
+    }
+
+    $hash = password_hash($newPassword, PASSWORD_DEFAULT);
+    $upStmt = $pdo->prepare("UPDATE users SET password_hash = ? WHERE id = ?");
+    if ($upStmt->execute([$hash, $user['id']])) {
+        echo json_encode(["success" => true, "message" => "Password reset successfully! You can now log in with your new password."]);
+    } else {
+        http_response_code(500);
+        echo json_encode(["success" => false, "message" => "Failed to update password."]);
+    }
+    exit();
+}
+
 // 2. REVIEWS & RATINGS API
 if ($action === 'reviews' && $method === 'GET') {
     $stmt = $pdo->query("
@@ -131,6 +162,30 @@ if ($action === 'add_review' && $method === 'POST') {
     } else {
         http_response_code(500);
         echo json_encode(["success" => false, "message" => "Failed to submit review."]);
+    }
+    exit();
+}
+
+if ($action === 'delete_review' && $method === 'DELETE') {
+    $reviewId = (int)($_GET['id'] ?? 0);
+    $adminUserId = (int)($_GET['user_id'] ?? 0);
+
+    $adminCheck = $pdo->prepare("SELECT is_admin FROM users WHERE id = ?");
+    $adminCheck->execute([$adminUserId]);
+    $isAdmin = (int)$adminCheck->fetchColumn();
+
+    if ($isAdmin !== 1) {
+        http_response_code(403);
+        echo json_encode(["success" => false, "message" => "Access denied. Only Admins can delete reviews."]);
+        exit();
+    }
+
+    $stmt = $pdo->prepare("DELETE FROM reviews WHERE id = ?");
+    if ($stmt->execute([$reviewId])) {
+        echo json_encode(["success" => true, "message" => "Review comment deleted successfully!"]);
+    } else {
+        http_response_code(500);
+        echo json_encode(["success" => false, "message" => "Failed to delete review."]);
     }
     exit();
 }
