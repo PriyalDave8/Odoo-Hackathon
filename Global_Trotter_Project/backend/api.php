@@ -84,10 +84,15 @@ if ($action === 'dashboard' && $method === 'GET') {
     $activeTrips = 0;
     foreach ($trips as $t) {
         $totalBudget += (float)$t['budget'];
-        if ($t['status'] === 'Planned' || $t['status'] === 'Active') $activeTrips++;
+        if ($t['status'] === 'Planned' || $t['status'] === 'Active' || $t['status'] === 'Confirmed') $activeTrips++;
     }
 
-    $destStmt = $pdo->query("SELECT * FROM destinations LIMIT 6");
+    $destStmt = $pdo->query("
+        SELECT *, ((visit_count * 2) + view_count) as metric_score 
+        FROM destinations 
+        ORDER BY metric_score DESC, visit_count DESC, view_count DESC 
+        LIMIT 6
+    ");
     $destinations = $destStmt->fetchAll();
 
     echo json_encode([
@@ -125,12 +130,16 @@ if ($action === 'create_trip' && $method === 'POST') {
     $startDate = trim($data['start_date'] ?? '');
     $endDate = trim($data['end_date'] ?? '');
     $budget = (float)($data['budget'] ?? 0.0);
+    $transportCost = (float)($data['transport_cost'] ?? 0.0);
+    $hotelCost = (float)($data['hotel_cost'] ?? 0.0);
+    $mealCost = (float)($data['meal_cost'] ?? 0.0);
     $description = trim($data['description'] ?? '');
     $coverUrl = trim($data['cover_image_url'] ?? '');
+    $shareToken = 'share_' . uniqid() . '_' . rand(1000, 9999);
 
-    $stmt = $pdo->prepare("INSERT INTO trips (user_id, title, destination, start_date, end_date, budget, status, description, cover_image_url) VALUES (?, ?, ?, ?, ?, ?, 'Planned', ?, ?)");
-    if ($stmt->execute([$userId, $title, $destination, $startDate, $endDate, $budget, $description, $coverUrl])) {
-        echo json_encode(["success" => true, "message" => "Trip created successfully!", "trip_id" => (int)$pdo->lastInsertId()]);
+    $stmt = $pdo->prepare("INSERT INTO trips (user_id, title, destination, start_date, end_date, budget, transport_cost, hotel_cost, meal_cost, share_token, status, description, cover_image_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Planned', ?, ?)");
+    if ($stmt->execute([$userId, $title, $destination, $startDate, $endDate, $budget, $transportCost, $hotelCost, $mealCost, $shareToken, $description, $coverUrl])) {
+        echo json_encode(["success" => true, "message" => "Trip created successfully!", "trip_id" => (int)$pdo->lastInsertId(), "share_token" => $shareToken]);
     } else {
         http_response_code(500);
         echo json_encode(["success" => false, "message" => "Failed to create trip."]);
@@ -197,6 +206,8 @@ if ($action === 'add_stop' && $method === 'POST') {
 
     $stmt = $pdo->prepare("INSERT INTO trip_stops (trip_id, city_name, country, stop_order, start_date, end_date, notes) VALUES (?, ?, ?, ?, ?, ?, ?)");
     if ($stmt->execute([$tripId, $cityName, $country, $nextOrder, $startDate, $endDate, $notes])) {
+        $updateVisit = $pdo->prepare("UPDATE destinations SET visit_count = visit_count + 1 WHERE LOWER(name) = LOWER(?)");
+        $updateVisit->execute([$cityName]);
         echo json_encode(["success" => true, "message" => "Stop added!", "stop_id" => (int)$pdo->lastInsertId()]);
     } else {
         http_response_code(500);
@@ -251,12 +262,118 @@ if ($action === 'delete_activity' && $method === 'DELETE') {
     exit();
 }
 
-// 5. CITY SEARCH API
+// 5. UPDATE TRIP EXPENSE CATEGORIES
+if ($action === 'update_trip_expenses' && $method === 'POST') {
+    $tripId = (int)($data['trip_id'] ?? 0);
+    $transportCost = (float)($data['transport_cost'] ?? 0.0);
+    $hotelCost = (float)($data['hotel_cost'] ?? 0.0);
+    $mealCost = (float)($data['meal_cost'] ?? 0.0);
+
+    $stmt = $pdo->prepare("UPDATE trips SET transport_cost = ?, hotel_cost = ?, meal_cost = ? WHERE id = ?");
+    if ($stmt->execute([$transportCost, $hotelCost, $mealCost, $tripId])) {
+        echo json_encode(["success" => true, "message" => "Expenses updated successfully."]);
+    } else {
+        http_response_code(500);
+        echo json_encode(["success" => false, "message" => "Failed to update expenses."]);
+    }
+    exit();
+}
+
+// 6. COPY TRIP TO USER ACCOUNT (Feature: Copy Trip option so another user can use the itinerary)
+if ($action === 'copy_trip' && $method === 'POST') {
+    $sourceTripId = (int)($data['trip_id'] ?? 0);
+    $userId = (int)($data['user_id'] ?? 0);
+
+    if ($sourceTripId <= 0 || $userId <= 0) {
+        http_response_code(400);
+        echo json_encode(["success" => false, "message" => "Invalid trip_id or user_id."]);
+        exit();
+    }
+
+    // Fetch original trip
+    $srcStmt = $pdo->prepare("SELECT * FROM trips WHERE id = ?");
+    $srcStmt->execute([$sourceTripId]);
+    $srcTrip = $srcStmt->fetch();
+
+    if (!$srcTrip) {
+        http_response_code(404);
+        echo json_encode(["success" => false, "message" => "Source trip not found."]);
+        exit();
+    }
+
+    // Insert new cloned trip
+    $newTitle = 'Copy of ' . $srcTrip['title'];
+    $newShareToken = 'share_' . uniqid() . '_' . rand(1000, 9999);
+
+    $insStmt = $pdo->prepare("INSERT INTO trips (user_id, title, destination, start_date, end_date, budget, transport_cost, hotel_cost, meal_cost, share_token, status, description, cover_image_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Planned', ?, ?)");
+    $insStmt->execute([
+        $userId,
+        $newTitle,
+        $srcTrip['destination'],
+        $srcTrip['start_date'],
+        $srcTrip['end_date'],
+        $srcTrip['budget'],
+        $srcTrip['transport_cost'],
+        $srcTrip['hotel_cost'],
+        $srcTrip['meal_cost'],
+        $newShareToken,
+        $srcTrip['description'],
+        $srcTrip['cover_image_url']
+    ]);
+
+    $newTripId = (int)$pdo->lastInsertId();
+
+    // Copy stops & activities
+    $stopsStmt = $pdo->prepare("SELECT * FROM trip_stops WHERE trip_id = ?");
+    $stopsStmt->execute([$sourceTripId]);
+    $stops = $stopsStmt->fetchAll();
+
+    foreach ($stops as $stop) {
+        $insStop = $pdo->prepare("INSERT INTO trip_stops (trip_id, city_name, country, stop_order, start_date, end_date, notes) VALUES (?, ?, ?, ?, ?, ?, ?)");
+        $insStop->execute([
+            $newTripId,
+            $stop['city_name'],
+            $stop['country'],
+            $stop['stop_order'],
+            $stop['start_date'],
+            $stop['end_date'],
+            $stop['notes']
+        ]);
+        $newStopId = (int)$pdo->lastInsertId();
+
+        $actStmt = $pdo->prepare("SELECT * FROM stop_activities WHERE stop_id = ?");
+        $actStmt->execute([$stop['id']]);
+        $activities = $actStmt->fetchAll();
+
+        foreach ($activities as $act) {
+            $insAct = $pdo->prepare("INSERT INTO stop_activities (stop_id, title, category, time_slot, cost, notes, activity_order) VALUES (?, ?, ?, ?, ?, ?, ?)");
+            $insAct->execute([
+                $newStopId,
+                $act['title'],
+                $act['category'],
+                $act['time_slot'],
+                $act['cost'],
+                $act['notes'],
+                $act['activity_order']
+            ]);
+        }
+    }
+
+    echo json_encode([
+        "success" => true,
+        "message" => "Trip successfully copied to your account!",
+        "new_trip_id" => $newTripId
+    ]);
+    exit();
+}
+
+// 7. CITY SEARCH & RECOMMENDED CITIES API
 if ($action === 'cities' && $method === 'GET') {
     $query = trim($_GET['q'] ?? '');
     $region = trim($_GET['region'] ?? 'All');
+    $sortBy = trim($_GET['sort'] ?? 'popular');
 
-    $sql = "SELECT * FROM destinations WHERE 1=1";
+    $sql = "SELECT *, ((visit_count * 2) + view_count) as metric_score FROM destinations WHERE 1=1";
     $params = [];
 
     if (!empty($query)) {
@@ -272,7 +389,13 @@ if ($action === 'cities' && $method === 'GET') {
         $params[] = $region;
     }
 
-    $sql .= " ORDER BY popularity_score DESC";
+    if ($sortBy === 'visits') {
+        $sql .= " ORDER BY visit_count DESC, view_count DESC";
+    } else if ($sortBy === 'views') {
+        $sql .= " ORDER BY view_count DESC, visit_count DESC";
+    } else {
+        $sql .= " ORDER BY metric_score DESC, visit_count DESC, view_count DESC";
+    }
 
     $stmt = $pdo->prepare($sql);
     $stmt->execute($params);
@@ -280,7 +403,20 @@ if ($action === 'cities' && $method === 'GET') {
     exit();
 }
 
-// 6. ACTIVITY SEARCH API
+if ($action === 'record_city_view' && $method === 'POST') {
+    $cityId = (int)($data['city_id'] ?? 0);
+    if ($cityId > 0) {
+        $stmt = $pdo->prepare("UPDATE destinations SET view_count = view_count + 1 WHERE id = ?");
+        $stmt->execute([$cityId]);
+        echo json_encode(["success" => true, "message" => "View recorded!"]);
+    } else {
+        http_response_code(400);
+        echo json_encode(["success" => false, "message" => "Invalid city_id."]);
+    }
+    exit();
+}
+
+// 8. ACTIVITY SEARCH API
 if ($action === 'activities' && $method === 'GET') {
     $query = trim($_GET['q'] ?? '');
     $category = trim($_GET['category'] ?? 'All');
