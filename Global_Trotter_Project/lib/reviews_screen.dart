@@ -320,11 +320,10 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                         children: [
                           Row(
                             children: [
-                              CircleAvatar(
+                              const CircleAvatar(
                                 radius: 20,
-                                backgroundImage: NetworkImage(
-                                  rev['profile_photo_url'] ?? 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80',
-                                ),
+                                backgroundColor: Color(0xFF2563EB),
+                                child: Icon(Icons.person, color: Colors.white, size: 20),
                               ),
                               const SizedBox(width: 12),
                               Expanded(

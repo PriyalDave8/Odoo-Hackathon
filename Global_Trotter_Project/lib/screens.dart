@@ -201,6 +201,212 @@ class _AuthScreenState extends State<AuthScreen> {
 }
 
 // ==========================================
+// CITY DETAILS MODAL DIALOG
+// ==========================================
+void showCityDetailsModal(BuildContext context, Map<String, dynamic> city, VoidCallback onPlanTrip) {
+  final int cityId = (city['id'] as num?)?.toInt() ?? 0;
+  if (cityId > 0) {
+    ApiService.recordCityView(cityId);
+  }
+
+  showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      backgroundColor: Colors.white,
+      contentPadding: EdgeInsets.zero,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      content: SizedBox(
+        width: 580,
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Hero Image & Header
+              Stack(
+                children: [
+                  ClipRRect(
+                    borderRadius: const BorderRadius.only(topLeft: Radius.circular(16), topRight: Radius.circular(16)),
+                    child: Image.network(
+                      city['image_url'] ?? '',
+                      height: 200,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) => Container(height: 200, color: const Color(0xFFE2E8F0), child: const Icon(Icons.image)),
+                    ),
+                  ),
+                  Positioned(
+                    top: 12,
+                    right: 12,
+                    child: CircleAvatar(
+                      backgroundColor: Colors.white,
+                      child: IconButton(
+                        icon: const Icon(Icons.close, color: Color(0xFF0F172A)),
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    bottom: 16,
+                    left: 20,
+                    right: 20,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                              decoration: BoxDecoration(color: const Color(0xFF2563EB), borderRadius: BorderRadius.circular(6)),
+                              child: Text(city['region'] ?? 'Europe', style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold)),
+                            ),
+                            const SizedBox(width: 8),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                              decoration: BoxDecoration(color: Colors.black.withValues(alpha: 0.6), borderRadius: BorderRadius.circular(6)),
+                              child: Text('${city['popularity_score'] ?? '4.8'} ★ Rating', style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold)),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 6),
+                        Text('${city['name']}, ${city['country']}', style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white)),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+
+              Padding(
+                padding: const EdgeInsets.all(24.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // View/Visit count badge
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('👁️ ${city['view_count'] ?? 0} Views • ✈️ ${city['visit_count'] ?? 0} Trips Planned', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF2563EB))),
+                        Text('Avg Cost: \$${(city['average_cost'] as num?)?.toDouble().toStringAsFixed(2) ?? '1,200.00'} (${city['cost_index'] ?? '\$\$\$'})', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Color(0xFF059669))),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    Text(city['description'] ?? '', style: const TextStyle(fontSize: 14, color: Color(0xFF334155), height: 1.4)),
+                    const SizedBox(height: 20),
+
+                    // Best Season to Visit
+                    const Row(
+                      children: [
+                        Icon(Icons.wb_sunny_outlined, size: 18, color: Color(0xFFD97706)),
+                        SizedBox(width: 8),
+                        Text('Best Season to Visit:', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 26.0),
+                      child: Text(city['best_season'] ?? 'May – October (Spring & Autumn)', style: const TextStyle(fontSize: 13, color: Color(0xFF475569))),
+                    ),
+                    const SizedBox(height: 20),
+
+                    // Top Attractions & Must-Visit Landmarks
+                    const Row(
+                      children: [
+                        Icon(Icons.place_outlined, size: 18, color: Color(0xFF2563EB)),
+                        SizedBox(width: 8),
+                        Text('Top Attractions & Highlights:', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Container(
+                      padding: const EdgeInsets.all(14),
+                      decoration: BoxDecoration(color: const Color(0xFFF8FAFC), borderRadius: BorderRadius.circular(10), border: Border.all(color: const Color(0xFFE2E8F0))),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: (city['top_attractions'] != null && city['top_attractions'].toString().isNotEmpty)
+                            ? city['top_attractions'].toString().split(',').map((att) {
+                                return Padding(
+                                  padding: const EdgeInsets.symmetric(vertical: 3.0),
+                                  child: Row(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      const Text('• ', style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF2563EB))),
+                                      Expanded(child: Text(att.trim(), style: const TextStyle(fontSize: 13, color: Color(0xFF334155)))),
+                                    ],
+                                  ),
+                                );
+                              }).toList()
+                            : [
+                                const Text('• Eiffel Tower Summit Access'),
+                                const Text('• Louvre Museum Masterpieces Walk'),
+                                const Text('• Seine River Dinner Cruise'),
+                              ],
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+
+                    // Expense Breakdown
+                    const Row(
+                      children: [
+                        Icon(Icons.account_balance_wallet_outlined, size: 18, color: Color(0xFF059669)),
+                        SizedBox(width: 8),
+                        Text('Estimated Daily Expense Breakdown:', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        _buildExpenseChip('Hotel / Stay', '\$${(city['hotel_avg_cost'] as num?)?.toDouble().toStringAsFixed(0) ?? '150'}/night', Icons.hotel),
+                        _buildExpenseChip('Meals / Dining', '\$${(city['meal_avg_cost'] as num?)?.toDouble().toStringAsFixed(0) ?? '55'}/day', Icons.restaurant),
+                        _buildExpenseChip('Local Transport', '\$20/day', Icons.directions_bus),
+                      ],
+                    ),
+                    const SizedBox(height: 24),
+
+                    SizedBox(
+                      width: double.infinity,
+                      height: 44,
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+                          Navigator.pop(context);
+                          onPlanTrip();
+                        },
+                        icon: const Icon(Icons.add, size: 18),
+                        label: Text('Plan Trip to ${city['name']}', style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+                        style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF2563EB), foregroundColor: Colors.white, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    ),
+  );
+}
+
+Widget _buildExpenseChip(String label, String value, IconData icon) {
+  return Container(
+    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+    decoration: BoxDecoration(color: const Color(0xFFF1F5F9), borderRadius: BorderRadius.circular(8)),
+    child: Row(
+      children: [
+        Icon(icon, size: 16, color: const Color(0xFF475569)),
+        const SizedBox(width: 8),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(label, style: const TextStyle(fontSize: 10, color: Color(0xFF64748B))),
+            Text(value, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
+          ],
+        ),
+      ],
+    ),
+  );
+}
+
+// ==========================================
 // 2. DASHBOARD SCREEN
 // ==========================================
 class DashboardScreen extends StatefulWidget {
@@ -310,7 +516,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             _buildKPICard(width: width, label: 'Total Trips:', value: '${stats['total_trips']}', icon: Icons.flight_outlined),
                             const SizedBox(width: 16),
                             _buildKPICard(width: width, label: 'Active / Upcoming:', value: '${stats['active_trips']}', icon: Icons.calendar_today_outlined),
-                            _buildBudgetKPICard(width: width, totalBudget: (stats['total_budget'] as num).toDouble()),
+                            _buildBudgetKPICard(width: width, totalBudget: (num.tryParse(stats['total_budget']?.toString() ?? '0') ?? 0.0).toDouble()),
                           ],
                         );
                       },
@@ -379,7 +585,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                   physics: const NeverScrollableScrollPhysics(),
                                   itemCount: destinations.length,
                                   separatorBuilder: (context, index) => const SizedBox(height: 14),
-                                  itemBuilder: (context, index) => _buildMockupCityCard(destinations[index]),
+                                  itemBuilder: (context, index) => _buildMockupCityCard(Map<String, dynamic>.from(destinations[index])),
                                 ),
                               ],
                             ),
@@ -468,29 +674,33 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Widget _buildMockupCityCard(Map<String, dynamic> dest) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12), border: Border.all(color: const Color(0xFFE2E8F0))),
-      child: Row(
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: Image.network(dest['image_url'] ?? '', width: 80, height: 65, fit: BoxFit.cover, errorBuilder: (context, error, stackTrace) => Container(width: 80, height: 65, color: const Color(0xFFE2E8F0), child: const Icon(Icons.image))),
-          ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(dest['name'] ?? '', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Color(0xFF0F172A))),
-                Text(dest['country'] ?? '', style: const TextStyle(fontSize: 12, color: Color(0xFF64748B))),
-                const SizedBox(height: 2),
-                Text('👁️ ${dest['view_count']} views • ✈️ ${dest['visit_count']} visits', style: const TextStyle(fontSize: 10, color: Color(0xFF2563EB), fontWeight: FontWeight.w600)),
-              ],
+    return InkWell(
+      onTap: () => showCityDetailsModal(context, dest, widget.onNavigateToCreateTrip),
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12), border: Border.all(color: const Color(0xFFE2E8F0))),
+        child: Row(
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: Image.network(dest['image_url'] ?? '', width: 80, height: 65, fit: BoxFit.cover, errorBuilder: (context, error, stackTrace) => Container(width: 80, height: 65, color: const Color(0xFFE2E8F0), child: const Icon(Icons.image))),
             ),
-          ),
-          Text('\$${(dest['average_cost'] as num).toStringAsFixed(2)}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-        ],
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(dest['name'] ?? '', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Color(0xFF0F172A))),
+                  Text(dest['country'] ?? '', style: const TextStyle(fontSize: 12, color: Color(0xFF64748B))),
+                  const SizedBox(height: 2),
+                  Text('👁️ ${dest['view_count']} views • ✈️ ${dest['visit_count']} visits', style: const TextStyle(fontSize: 10, color: Color(0xFF2563EB), fontWeight: FontWeight.w600)),
+                ],
+              ),
+            ),
+            Text('\$${((dest['average_cost'] is num) ? (dest['average_cost'] as num).toDouble() : (double.tryParse(dest['average_cost']?.toString() ?? '0') ?? 0.0)).toStringAsFixed(2)}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+          ],
+        ),
       ),
     );
   }
@@ -527,8 +737,32 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
   String _selectedTransportType = 'Flight ✈️';
   String _selectedAccommodation = 'Boutique Hotel 🏨';
   String _selectedGroupSize = 'Couple (2)';
-  String _selectedCurrency = 'USD (\$)';
+  String _selectedCurrency = 'INR (₹)';
 
+  final List<String> _availablePlaces = [
+    'Paris, France 🇫🇷',
+    'Rome, Italy 🇮🇹',
+    'Tokyo, Japan 🇯🇵',
+    'Kyoto, Japan 🇯🇵',
+    'Zurich, Switzerland 🇨🇭',
+    'Lucerne, Switzerland 🇨🇭',
+    'Bali, Indonesia 🇮🇩',
+    'Reykjavik, Iceland 🇮🇸',
+    'Barcelona, Spain 🇪🇸',
+    'Prague, Czech Republic 🇨🇿',
+    'Vienna, Austria 🇦🇹',
+    'Seoul, South Korea 🇰🇷',
+    'Bangkok, Thailand 🇹🇭',
+    'Santorini, Greece 🇬🇷',
+    'London, UK 🇬🇧',
+    'New York, USA 🇺🇸',
+    'Sydney, Australia 🇦🇺',
+    'Dubai, UAE 🇦🇪',
+    'Cape Town, South Africa 🇿A',
+    'Amsterdam, Netherlands 🇳🇱'
+  ];
+
+  final Set<String> _selectedPlaces = {'Paris, France 🇫🇷', 'Rome, Italy 🇮🇹'};
   bool isSubmitting = false;
 
   @override
@@ -675,7 +909,7 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
                     const SizedBox(width: 16),
                     Expanded(
                       flex: 1,
-                      child: _buildDropdown(['USD (\$)', 'EUR (€)', 'GBP (£)', 'JPY (¥)'], _selectedCurrency, (v) => setState(() => _selectedCurrency = v!)),
+                      child: _buildDropdown(['INR (₹)', 'USD (\$)', 'EUR (€)', 'GBP (£)', 'JPY (¥)'], _selectedCurrency, (v) => setState(() => _selectedCurrency = v!)),
                     ),
                   ],
                 ),
@@ -692,7 +926,44 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
                 const SizedBox(height: 20),
                 TextFormField(controller: _descriptionController, maxLines: 2, decoration: _inputDecoration('Trip Description & Notes (e.g. Dietary preferences, flight numbers)', Icons.notes)),
                 const SizedBox(height: 16),
-                TextFormField(controller: _coverUrlController, decoration: _inputDecoration('Cover Photo Image URL (Optional)', Icons.image)),
+                const SizedBox(height: 24),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text('4. Customise Included Places & City Stops 📍', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Color(0xFF2563EB))),
+                    Text('${_selectedPlaces.length} places selected', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF059669))),
+                  ],
+                ),
+                const SizedBox(height: 6),
+                const Text('Select or unselect which destinations you want to include in your customized trip itinerary:', style: TextStyle(fontSize: 12, color: Color(0xFF64748B))),
+                const SizedBox(height: 12),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: _availablePlaces.map((place) {
+                    final bool isSelected = _selectedPlaces.contains(place);
+                    return FilterChip(
+                      selected: isSelected,
+                      label: Text(place, style: TextStyle(fontSize: 12, fontWeight: isSelected ? FontWeight.bold : FontWeight.normal, color: isSelected ? const Color(0xFF2563EB) : const Color(0xFF475569))),
+                      selectedColor: const Color(0xFFEFF6FF),
+                      checkmarkColor: const Color(0xFF2563EB),
+                      backgroundColor: const Color(0xFFF8FAFC),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8), side: BorderSide(color: isSelected ? const Color(0xFF2563EB) : const Color(0xFFE2E8F0))),
+                      onSelected: (bool selected) {
+                        setState(() {
+                          if (selected) {
+                            _selectedPlaces.add(place);
+                          } else {
+                            if (_selectedPlaces.length > 1) {
+                              _selectedPlaces.remove(place);
+                            }
+                          }
+                          _destinationController.text = _selectedPlaces.map((p) => p.split(',')[0].trim()).join(' & ');
+                        });
+                      },
+                    );
+                  }).toList(),
+                ),
 
                 const SizedBox(height: 28),
                 Row(
@@ -756,6 +1027,7 @@ class MyTripsScreen extends StatefulWidget {
 class _MyTripsScreenState extends State<MyTripsScreen> {
   bool isLoading = true;
   List<dynamic> trips = [];
+  String selectedStatusFilter = 'All';
 
   @override
   void initState() {
@@ -850,6 +1122,15 @@ class _MyTripsScreenState extends State<MyTripsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final filteredTrips = trips.where((t) {
+      if (selectedStatusFilter == 'All') return true;
+      final String status = (t['status'] ?? 'Planned').toString();
+      if (selectedStatusFilter == 'Upcoming') return status == 'Planned' || status == 'Confirmed';
+      if (selectedStatusFilter == 'Ongoing') return status == 'Active' || status == 'Ongoing';
+      if (selectedStatusFilter == 'Completed') return status == 'Completed';
+      return true;
+    }).toList();
+
     return SingleChildScrollView(
       padding: const EdgeInsets.all(32.0),
       child: Column(
@@ -869,58 +1150,81 @@ class _MyTripsScreenState extends State<MyTripsScreen> {
               ElevatedButton.icon(onPressed: widget.onCreateNewTrip, icon: const Icon(Icons.add), label: const Text('Plan New Trip'), style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF2563EB), foregroundColor: Colors.white)),
             ],
           ),
-          const SizedBox(height: 24),
-          isLoading
-              ? const Center(child: CircularProgressIndicator())
-              : LayoutBuilder(
-                  builder: (context, constraints) {
-                    final double cardWidth = (constraints.maxWidth - 24) / 2;
-                    return Wrap(
-                      spacing: 24,
-                      runSpacing: 24,
-                      children: trips.map((t) {
-                        final trip = Map<String, dynamic>.from(t);
-                        return Container(
-                          width: cardWidth < 380 ? double.infinity : cardWidth,
-                          decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(14), border: Border.all(color: const Color(0xFFE2E8F0))),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Image.network(trip['cover_image_url'] ?? '', height: 130, width: double.infinity, fit: BoxFit.cover, errorBuilder: (context, error, stackTrace) => Container(height: 130, color: const Color(0xFFE2E8F0), child: const Icon(Icons.image))),
-                              Padding(
-                                padding: const EdgeInsets.all(18.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(trip['title'] ?? '', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
-                                    const SizedBox(height: 4),
-                                    Text('${trip['destination']} (${trip['start_date']} — ${trip['end_date']})', style: const TextStyle(fontSize: 13, color: Color(0xFF64748B))),
-                                    const SizedBox(height: 14),
-                                    Row(
-                                      children: [
-                                        Expanded(child: OutlinedButton.icon(onPressed: () => widget.onBuildItinerary(trip), icon: const Icon(Icons.tune_outlined, size: 14), label: const Text('Customize'))),
-                                        const SizedBox(width: 6),
-                                        Expanded(child: ElevatedButton.icon(onPressed: () => widget.onViewItinerary(trip), icon: const Icon(Icons.visibility, size: 14), label: const Text('View Plan'), style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF0F172A), foregroundColor: Colors.white))),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 8),
-                                    Row(
-                                      children: [
-                                        Expanded(child: OutlinedButton.icon(onPressed: () => _showShareDialog(trip), icon: const Icon(Icons.share, size: 14), label: const Text('Share'))),
-                                        const SizedBox(width: 6),
-                                        Expanded(child: OutlinedButton.icon(onPressed: () => _copyTripToAccount(trip), icon: const Icon(Icons.copy, size: 14), label: const Text('Copy Trip'))),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        );
-                      }).toList(),
-                    );
+          const SizedBox(height: 20),
+
+          // TRIP STATUS FILTERS
+          Row(
+            children: ['All', 'Upcoming', 'Ongoing', 'Completed'].map((filter) {
+              final isSelected = selectedStatusFilter == filter;
+              return Padding(
+                padding: const EdgeInsets.only(right: 10.0),
+                child: ChoiceChip(
+                  label: Text('$filter Trips'),
+                  selected: isSelected,
+                  selectedColor: const Color(0xFF2563EB),
+                  labelStyle: TextStyle(color: isSelected ? Colors.white : const Color(0xFF334155), fontWeight: FontWeight.bold, fontSize: 13),
+                  onSelected: (sel) {
+                    if (sel) setState(() => selectedStatusFilter = filter);
                   },
                 ),
+              );
+            }).toList(),
+          ),
+          const SizedBox(height: 24),
+
+          isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : filteredTrips.isEmpty
+                  ? const Center(child: Padding(padding: EdgeInsets.all(40), child: Text('No trips match the selected filter.', style: TextStyle(color: Color(0xFF94A3B8)))))
+                  : LayoutBuilder(
+                      builder: (context, constraints) {
+                        final double cardWidth = (constraints.maxWidth - 24) / 2;
+                        return Wrap(
+                          spacing: 24,
+                          runSpacing: 24,
+                          children: filteredTrips.map((t) {
+                            final trip = Map<String, dynamic>.from(t);
+                            return Container(
+                              width: cardWidth < 380 ? double.infinity : cardWidth,
+                              decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(14), border: Border.all(color: const Color(0xFFE2E8F0))),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Image.network(trip['cover_image_url'] ?? '', height: 130, width: double.infinity, fit: BoxFit.cover, errorBuilder: (context, error, stackTrace) => Container(height: 130, color: const Color(0xFFE2E8F0), child: const Icon(Icons.image))),
+                                  Padding(
+                                    padding: const EdgeInsets.all(18.0),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(trip['title'] ?? '', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
+                                        const SizedBox(height: 4),
+                                        Text('${trip['destination']} (${trip['start_date']} — ${trip['end_date']})', style: const TextStyle(fontSize: 13, color: Color(0xFF64748B))),
+                                        const SizedBox(height: 14),
+                                        Row(
+                                          children: [
+                                            Expanded(child: OutlinedButton.icon(onPressed: () => widget.onBuildItinerary(trip), icon: const Icon(Icons.tune_outlined, size: 14), label: const Text('Customize'))),
+                                            const SizedBox(width: 6),
+                                            Expanded(child: ElevatedButton.icon(onPressed: () => widget.onViewItinerary(trip), icon: const Icon(Icons.visibility, size: 14), label: const Text('View Plan'), style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF0F172A), foregroundColor: Colors.white))),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 8),
+                                        Row(
+                                          children: [
+                                            Expanded(child: OutlinedButton.icon(onPressed: () => _showShareDialog(trip), icon: const Icon(Icons.share, size: 14), label: const Text('Share'))),
+                                            const SizedBox(width: 6),
+                                            Expanded(child: OutlinedButton.icon(onPressed: () => _copyTripToAccount(trip), icon: const Icon(Icons.copy, size: 14), label: const Text('Copy Trip'))),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }).toList(),
+                        );
+                      },
+                    ),
         ],
       ),
     );
@@ -1184,7 +1488,7 @@ class _ItineraryBuilderScreenState extends State<ItineraryBuilderScreen> {
 }
 
 // ==========================================
-// 6. ITINERARY VIEW SCREEN (With Direct Review Button & Full Trip Activities)
+// 6. ITINERARY VIEW SCREEN
 // ==========================================
 class ItineraryViewScreen extends StatefulWidget {
   final Map<String, dynamic> trip;
@@ -1200,7 +1504,7 @@ class _ItineraryViewScreenState extends State<ItineraryViewScreen> {
   bool isLoading = true;
   String? error;
   Map<String, dynamic>? itineraryData;
-  int selectedViewTab = 0; // 0: Day-wise Timeline, 1: City-Grouped View
+  int selectedViewTab = 0;
   Set<int> excludedStopIds = {};
 
   @override
@@ -1494,9 +1798,9 @@ class _ItineraryViewScreenState extends State<ItineraryViewScreen> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      _buildMetricSummary('Total Cost', '\$${totalEstimatedCost.toStringAsFixed(2)}', Icons.account_balance_wallet_outlined, const Color(0xFF2563EB)),
-                      _buildMetricSummary('Planned Budget', '\$${plannedBudget.toStringAsFixed(2)}', Icons.flag_outlined, const Color(0xFF059669)),
-                      _buildMetricSummary('Daily Average', '\$${dailyCost.toStringAsFixed(2)}/day', Icons.today, const Color(0xFFD97706)),
+                      _buildMetricSummary('Total Cost', '${(trip['currency'] != null && (trip['currency'].toString().contains('INR') || trip['currency'].toString().contains('₹'))) ? '₹' : (trip['currency'] != null && (trip['currency'].toString().contains('EUR') || trip['currency'].toString().contains('€'))) ? '€' : (trip['currency'] != null && (trip['currency'].toString().contains('GBP') || trip['currency'].toString().contains('£'))) ? '£' : (trip['currency'] != null && (trip['currency'].toString().contains('JPY') || trip['currency'].toString().contains('¥'))) ? '¥' : '\$'}${totalEstimatedCost.toStringAsFixed(2)}', Icons.account_balance_wallet_outlined, const Color(0xFF2563EB)),
+                      _buildMetricSummary('Planned Budget', '${(trip['currency'] != null && (trip['currency'].toString().contains('INR') || trip['currency'].toString().contains('₹'))) ? '₹' : (trip['currency'] != null && (trip['currency'].toString().contains('EUR') || trip['currency'].toString().contains('€'))) ? '€' : (trip['currency'] != null && (trip['currency'].toString().contains('GBP') || trip['currency'].toString().contains('£'))) ? '£' : (trip['currency'] != null && (trip['currency'].toString().contains('JPY') || trip['currency'].toString().contains('¥'))) ? '¥' : '\$'}${plannedBudget.toStringAsFixed(2)}', Icons.flag_outlined, const Color(0xFF059669)),
+                      _buildMetricSummary('Daily Average', '${(trip['currency'] != null && (trip['currency'].toString().contains('INR') || trip['currency'].toString().contains('₹'))) ? '₹' : (trip['currency'] != null && (trip['currency'].toString().contains('EUR') || trip['currency'].toString().contains('€'))) ? '€' : (trip['currency'] != null && (trip['currency'].toString().contains('GBP') || trip['currency'].toString().contains('£'))) ? '£' : (trip['currency'] != null && (trip['currency'].toString().contains('JPY') || trip['currency'].toString().contains('¥'))) ? '¥' : '\$'}${dailyCost.toStringAsFixed(2)}/day', Icons.today, const Color(0xFFD97706)),
                       _buildMetricSummary('Included Cities', '${stops.length - excludedStopIds.length} of ${stops.length} Cities', Icons.location_city, const Color(0xFF7C3AED)),
                     ],
                   ),
@@ -1881,32 +2185,36 @@ class _CitySearchScreenState extends State<CitySearchScreen> {
   }
 
   Widget _buildCityCard(double width, Map<String, dynamic> city) {
-    return Container(
-      width: width,
-      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(14), border: Border.all(color: const Color(0xFFE2E8F0))),
-      clipBehavior: Clip.antiAlias,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Image.network(city['image_url'] ?? '', height: 150, width: double.infinity, fit: BoxFit.cover, errorBuilder: (context, error, stackTrace) => Container(height: 150, color: const Color(0xFFE2E8F0), child: const Icon(Icons.image))),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text('${city['name']}, ${city['country']}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Color(0xFF0F172A))),
-                    Text('${city['popularity_score']} ★', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFFD97706))),
-                  ],
-                ),
-                const SizedBox(height: 4),
-                Text('👁️ ${city['view_count']} views • ✈️ ${city['visit_count']} visits', style: const TextStyle(fontSize: 11, color: Color(0xFF2563EB), fontWeight: FontWeight.w600)),
-              ],
+    return InkWell(
+      onTap: () => showCityDetailsModal(context, city, () => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Plan trip to ${city['name']} selected!')))),
+      borderRadius: BorderRadius.circular(14),
+      child: Container(
+        width: width,
+        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(14), border: Border.all(color: const Color(0xFFE2E8F0))),
+        clipBehavior: Clip.antiAlias,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Image.network(city['image_url'] ?? '', height: 150, width: double.infinity, fit: BoxFit.cover, errorBuilder: (context, error, stackTrace) => Container(height: 150, color: const Color(0xFFE2E8F0), child: const Icon(Icons.image))),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('${city['name']}, ${city['country']}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Color(0xFF0F172A))),
+                      Text('${city['popularity_score']} ★', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFFD97706))),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  Text('👁️ ${city['view_count']} views • ✈️ ${city['visit_count']} visits', style: const TextStyle(fontSize: 11, color: Color(0xFF2563EB), fontWeight: FontWeight.w600)),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

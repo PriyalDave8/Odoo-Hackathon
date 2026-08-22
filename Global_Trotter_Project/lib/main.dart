@@ -208,13 +208,10 @@ class _MainShellScreenState extends State<MainShellScreen> {
                     ),
                     child: Row(
                       children: [
-                        CircleAvatar(
+                        const CircleAvatar(
                           radius: 16,
-                          backgroundImage: NetworkImage(
-                            widget.user['profile_photo_url'] ?? 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80',
-                          ),
-                          backgroundColor: const Color(0xFF2563EB),
-                          onForegroundImageError: (exception, stackTrace) {},
+                          backgroundColor: Color(0xFF2563EB),
+                          child: Icon(Icons.person, color: Colors.white, size: 18),
                         ),
                         const SizedBox(width: 10),
                         Expanded(

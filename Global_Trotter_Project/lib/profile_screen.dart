@@ -23,7 +23,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final _formKey = GlobalKey<FormState>();
   late TextEditingController _nameController;
   late TextEditingController _emailController;
-  late TextEditingController _photoUrlController;
   late String _selectedLanguage;
 
   bool isSaving = false;
@@ -35,9 +34,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     super.initState();
     _nameController = TextEditingController(text: widget.user['name'] ?? '');
     _emailController = TextEditingController(text: widget.user['email'] ?? '');
-    _photoUrlController = TextEditingController(
-      text: widget.user['profile_photo_url'] ?? 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80',
-    );
     _selectedLanguage = widget.user['language_preference'] ?? 'English';
     _loadSavedDestinations();
   }
@@ -46,7 +42,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void dispose() {
     _nameController.dispose();
     _emailController.dispose();
-    _photoUrlController.dispose();
     super.dispose();
   }
 
@@ -67,7 +62,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       userId: widget.user['id'],
       name: _nameController.text.trim(),
       email: _emailController.text.trim(),
-      profilePhotoUrl: _photoUrlController.text.trim(),
+      profilePhotoUrl: '',
       languagePreference: _selectedLanguage,
     );
 
@@ -151,11 +146,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       children: [
                         Row(
                           children: [
-                            CircleAvatar(
-                              radius: 40,
-                              backgroundImage: NetworkImage(_photoUrlController.text),
-                              backgroundColor: const Color(0xFF2563EB),
-                              onForegroundImageError: (exception, stackTrace) {},
+                            const CircleAvatar(
+                              radius: 36,
+                              backgroundColor: Color(0xFF2563EB),
+                              child: Icon(Icons.person, color: Colors.white, size: 40),
                             ),
                             const SizedBox(width: 20),
                             Column(
@@ -208,15 +202,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                         const SizedBox(height: 16),
 
-                        const Text('Profile Photo URL', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF334155))),
-                        const SizedBox(height: 6),
-                        TextFormField(
-                          controller: _photoUrlController,
-                          onChanged: (v) => setState(() {}),
-                          decoration: _inputDecoration('https://...', Icons.image_outlined),
-                        ),
-                        const SizedBox(height: 16),
-
                         const Text('Language Preference', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF334155))),
                         const SizedBox(height: 6),
                         Container(
@@ -226,7 +211,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             child: DropdownButton<String>(
                               isExpanded: true,
                               value: _selectedLanguage,
-                              items: ['English', 'Spanish', 'French', 'German', 'Japanese'].map((lang) => DropdownMenuItem(value: lang, child: Text(lang))).toList(),
+                              items: ['English', 'Spanish', 'French', 'German', 'Japanese'].map((l) => DropdownMenuItem(value: l, child: Text(l))).toList(),
                               onChanged: (v) {
                                 if (v != null) setState(() => _selectedLanguage = v);
                               },
@@ -236,11 +221,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         const SizedBox(height: 28),
 
                         SizedBox(
+                          width: double.infinity,
                           height: 44,
                           child: ElevatedButton.icon(
                             onPressed: isSaving ? null : _saveProfile,
                             icon: const Icon(Icons.save_outlined, size: 18),
-                            label: const Text('Save Changes', style: TextStyle(fontWeight: FontWeight.bold)),
+                            label: isSaving ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2)) : const Text('Save Changes', style: TextStyle(fontWeight: FontWeight.bold)),
                             style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF2563EB), foregroundColor: Colors.white, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
                           ),
                         ),
@@ -256,29 +242,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 flex: 2,
                 child: Column(
                   children: [
-                    // SAVED DESTINATIONS CARD
                     Container(
                       padding: const EdgeInsets.all(24),
                       decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16), border: Border.all(color: const Color(0xFFE2E8F0))),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Row(
+                          const Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              const Text('Saved Destinations', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
-                              Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                                decoration: BoxDecoration(color: const Color(0xFFEFF6FF), borderRadius: BorderRadius.circular(6)),
-                                child: Text('${savedDestinations.length} saved', style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Color(0xFF2563EB))),
-                              ),
+                              Text('Saved Destinations', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
+                              Icon(Icons.bookmark_outline, color: Color(0xFF2563EB), size: 20),
                             ],
                           ),
                           const SizedBox(height: 16),
                           isLoadingSaved
                               ? const Center(child: CircularProgressIndicator())
                               : savedDestinations.isEmpty
-                                  ? const Text('No saved destinations yet.', style: TextStyle(fontSize: 13, color: Color(0xFF94A3B8)))
+                                  ? const Text('No saved destinations yet.', style: TextStyle(color: Color(0xFF94A3B8), fontSize: 13))
                                   : ListView.separated(
                                       shrinkWrap: true,
                                       physics: const NeverScrollableScrollPhysics(),
@@ -293,19 +274,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                             children: [
                                               ClipRRect(
                                                 borderRadius: BorderRadius.circular(6),
-                                                child: Image.network(dest['image_url'] ?? '', width: 45, height: 45, fit: BoxFit.cover, errorBuilder: (context, error, stackTrace) => Container(width: 45, height: 45, color: const Color(0xFFE2E8F0))),
+                                                child: Image.network(dest['image_url'] ?? '', width: 50, height: 40, fit: BoxFit.cover, errorBuilder: (context, error, stackTrace) => Container(width: 50, height: 40, color: const Color(0xFFE2E8F0), child: const Icon(Icons.image, size: 16))),
                                               ),
                                               const SizedBox(width: 12),
                                               Expanded(
                                                 child: Column(
                                                   crossAxisAlignment: CrossAxisAlignment.start,
                                                   children: [
-                                                    Text(dest['name'] ?? '', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                                                    Text(dest['name'] ?? '', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Color(0xFF0F172A))),
                                                     Text(dest['country'] ?? '', style: const TextStyle(fontSize: 11, color: Color(0xFF64748B))),
                                                   ],
                                                 ),
                                               ),
-                                              const Icon(Icons.bookmark, color: Color(0xFF2563EB), size: 18),
+                                              IconButton(
+                                                icon: const Icon(Icons.delete_outline, size: 18, color: Color(0xFFDC2626)),
+                                                onPressed: () async {
+                                                  await ApiService.toggleSavedDestination(widget.user['id'], dest['id']);
+                                                  _loadSavedDestinations();
+                                                },
+                                              ),
                                             ],
                                           ),
                                         );
@@ -316,7 +303,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                     const SizedBox(height: 20),
 
-                    // PRIVACY & ACCOUNT DELETION CARD
                     Container(
                       padding: const EdgeInsets.all(24),
                       decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16), border: Border.all(color: const Color(0xFFE2E8F0))),
@@ -327,25 +313,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           const SizedBox(height: 14),
                           OutlinedButton.icon(
                             onPressed: () {
-                              final String dataJson = jsonEncode(widget.user);
-                              Clipboard.setData(ClipboardData(text: dataJson));
-                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Account JSON data copied to clipboard!')));
+                              final String jsonStr = jsonEncode(widget.user);
+                              Clipboard.setData(ClipboardData(text: jsonStr));
+                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Account data exported to clipboard!')));
                             },
                             icon: const Icon(Icons.download_outlined, size: 16),
-                            label: const Text('Download Personal Data'),
+                            label: const Text('Export My Travel Data'),
                           ),
-                          const SizedBox(height: 20),
-                          const Divider(color: Color(0xFFF1F5F9)),
-                          const SizedBox(height: 14),
-                          const Text('Danger Zone', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFFDC2626))),
-                          const SizedBox(height: 6),
-                          const Text('Deleting your account removes all saved trips and data permanently.', style: TextStyle(fontSize: 12, color: Color(0xFF64748B))),
                           const SizedBox(height: 12),
-                          ElevatedButton.icon(
+                          OutlinedButton.icon(
                             onPressed: _confirmDeleteAccount,
-                            icon: const Icon(Icons.delete_forever, size: 16),
-                            label: const Text('Delete Account'),
-                            style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFFEF2F2), foregroundColor: const Color(0xFFDC2626), elevation: 0),
+                            icon: const Icon(Icons.delete_forever, color: Color(0xFFDC2626), size: 16),
+                            label: const Text('Delete Account', style: TextStyle(color: Color(0xFFDC2626))),
+                            style: OutlinedButton.styleFrom(side: const BorderSide(color: Color(0xFFFCA5A5))),
                           ),
                         ],
                       ),
@@ -368,8 +348,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
       fillColor: const Color(0xFFF8FAFC),
       contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: Color(0xFFE2E8F0))),
-      enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: Color(0xFFE2E8F0))),
-      focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: Color(0xFF2563EB), width: 1.5)),
     );
   }
 }

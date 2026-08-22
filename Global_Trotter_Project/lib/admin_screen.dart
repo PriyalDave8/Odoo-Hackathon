@@ -270,11 +270,11 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen> {
                                     DataCell(
                                       Row(
                                         children: [
-                                          CircleAvatar(
-                                            radius: 14,
-                                            backgroundImage: NetworkImage(u['profile_photo_url'] ?? ''),
-                                            backgroundColor: const Color(0xFF2563EB),
-                                          ),
+                                           const CircleAvatar(
+                                             radius: 14,
+                                             backgroundColor: Color(0xFF2563EB),
+                                             child: Icon(Icons.person, color: Colors.white, size: 14),
+                                           ),
                                           const SizedBox(width: 10),
                                           Text(u['name'] ?? '', style: const TextStyle(fontWeight: FontWeight.bold)),
                                         ],
