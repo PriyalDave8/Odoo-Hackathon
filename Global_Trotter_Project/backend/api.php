@@ -491,10 +491,18 @@ if ($action === 'update_trip_expenses' && $method === 'POST') {
     $transportCost = (float)($data['transport_cost'] ?? 0.0);
     $hotelCost = (float)($data['hotel_cost'] ?? 0.0);
     $mealCost = (float)($data['meal_cost'] ?? 0.0);
+    $budget = (float)($data['budget'] ?? 0.0);
 
-    $stmt = $pdo->prepare("UPDATE trips SET transport_cost = ?, hotel_cost = ?, meal_cost = ? WHERE id = ?");
-    if ($stmt->execute([$transportCost, $hotelCost, $mealCost, $tripId])) {
-        echo json_encode(["success" => true, "message" => "Expenses updated successfully."]);
+    if ($budget > 0) {
+        $stmt = $pdo->prepare("UPDATE trips SET transport_cost = ?, hotel_cost = ?, meal_cost = ?, budget = ? WHERE id = ?");
+        $ok = $stmt->execute([$transportCost, $hotelCost, $mealCost, $budget, $tripId]);
+    } else {
+        $stmt = $pdo->prepare("UPDATE trips SET transport_cost = ?, hotel_cost = ?, meal_cost = ? WHERE id = ?");
+        $ok = $stmt->execute([$transportCost, $hotelCost, $mealCost, $tripId]);
+    }
+
+    if ($ok) {
+        echo json_encode(["success" => true, "message" => "Expenses and customisation budget updated successfully."]);
     } else {
         http_response_code(500);
         echo json_encode(["success" => false, "message" => "Failed to update expenses."]);
