@@ -26,12 +26,21 @@ if ($action === 'register' && $method === 'POST') {
     }
 
     $hash = password_hash($password, PASSWORD_BCRYPT);
-    $stmt = $pdo->prepare("INSERT INTO users (name, email, password_hash) VALUES (?, ?, ?)");
-    if ($stmt->execute([$name, $email, $hash])) {
+    $stmt = $pdo->prepare("INSERT INTO users (name, email, password_hash, profile_photo_url, language_preference, is_admin) VALUES (?, ?, ?, ?, ?, 0)");
+    $photoUrl = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80';
+    if ($stmt->execute([$name, $email, $hash, $photoUrl, 'English'])) {
+        $newId = (int)$pdo->lastInsertId();
         echo json_encode([
             "success" => true,
             "message" => "Registration successful!",
-            "user" => ["id" => (int)$pdo->lastInsertId(), "name" => $name, "email" => $email]
+            "user" => [
+                "id" => $newId,
+                "name" => $name,
+                "email" => $email,
+                "profile_photo_url" => $photoUrl,
+                "language_preference" => "English",
+                "is_admin" => 0
+            ]
         ]);
     } else {
         http_response_code(500);
@@ -58,7 +67,14 @@ if ($action === 'login' && $method === 'POST') {
         echo json_encode([
             "success" => true,
             "message" => "Login successful!",
-            "user" => ["id" => (int)$user['id'], "name" => $user['name'], "email" => $user['email']]
+            "user" => [
+                "id" => (int)$user['id'],
+                "name" => $user['name'],
+                "email" => $user['email'],
+                "profile_photo_url" => $user['profile_photo_url'] ?? 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80',
+                "language_preference" => $user['language_preference'] ?? 'English',
+                "is_admin" => (int)($user['is_admin'] ?? 0)
+            ]
         ]);
     } else {
         http_response_code(401);
@@ -67,7 +83,210 @@ if ($action === 'login' && $method === 'POST') {
     exit();
 }
 
-// 2. DASHBOARD DATA
+// 2. REVIEWS & RATINGS API
+if ($action === 'reviews' && $method === 'GET') {
+    $stmt = $pdo->query("
+        SELECT r.*, u.name as user_name, u.profile_photo_url 
+        FROM reviews r 
+        JOIN users u ON r.user_id = u.id 
+        ORDER BY r.created_at DESC
+    ");
+    $reviews = $stmt->fetchAll();
+
+    $avgRating = (float)$pdo->query("SELECT COALESCE(AVG(rating), 4.9) FROM reviews")->fetchColumn();
+    $totalReviews = count($reviews);
+
+    $ratingCounts = [5 => 0, 4 => 0, 3 => 0, 2 => 0, 1 => 0];
+    foreach ($reviews as $r) {
+        $star = (int)$r['rating'];
+        if (isset($ratingCounts[$star])) $ratingCounts[$star]++;
+    }
+
+    echo json_encode([
+        "success" => true,
+        "average_rating" => round($avgRating, 1),
+        "total_reviews" => $totalReviews,
+        "rating_counts" => $ratingCounts,
+        "reviews" => $reviews
+    ]);
+    exit();
+}
+
+if ($action === 'add_review' && $method === 'POST') {
+    $userId = (int)($data['user_id'] ?? 0);
+    $destName = trim($data['destination_name'] ?? 'Paris, France');
+    $rating = (int)($data['rating'] ?? 5);
+    $title = trim($data['title'] ?? '');
+    $comment = trim($data['comment'] ?? '');
+
+    if ($userId <= 0 || empty($title) || empty($comment)) {
+        http_response_code(400);
+        echo json_encode(["success" => false, "message" => "Title and review comment are required."]);
+        exit();
+    }
+
+    $stmt = $pdo->prepare("INSERT INTO reviews (user_id, destination_name, rating, title, comment) VALUES (?, ?, ?, ?, ?)");
+    if ($stmt->execute([$userId, $destName, $rating, $title, $comment])) {
+        echo json_encode(["success" => true, "message" => "Review submitted successfully!"]);
+    } else {
+        http_response_code(500);
+        echo json_encode(["success" => false, "message" => "Failed to submit review."]);
+    }
+    exit();
+}
+
+// 3. USER PROFILE & SETTINGS API
+if ($action === 'update_profile' && $method === 'POST') {
+    $userId = (int)($data['user_id'] ?? 0);
+    $name = trim($data['name'] ?? '');
+    $email = trim($data['email'] ?? '');
+    $photoUrl = trim($data['profile_photo_url'] ?? '');
+    $language = trim($data['language_preference'] ?? 'English');
+
+    if ($userId <= 0 || empty($name) || empty($email)) {
+        http_response_code(400);
+        echo json_encode(["success" => false, "message" => "User ID, Name, and Email are required."]);
+        exit();
+    }
+
+    $stmt = $pdo->prepare("UPDATE users SET name = ?, email = ?, profile_photo_url = ?, language_preference = ? WHERE id = ?");
+    if ($stmt->execute([$name, $email, $photoUrl, $language, $userId])) {
+        $uStmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
+        $uStmt->execute([$userId]);
+        $updatedUser = $uStmt->fetch();
+        echo json_encode([
+            "success" => true,
+            "message" => "Profile updated successfully!",
+            "user" => [
+                "id" => (int)$updatedUser['id'],
+                "name" => $updatedUser['name'],
+                "email" => $updatedUser['email'],
+                "profile_photo_url" => $updatedUser['profile_photo_url'],
+                "language_preference" => $updatedUser['language_preference'],
+                "is_admin" => (int)$updatedUser['is_admin']
+            ]
+        ]);
+    } else {
+        http_response_code(500);
+        echo json_encode(["success" => false, "message" => "Failed to update profile."]);
+    }
+    exit();
+}
+
+if ($action === 'delete_account' && $method === 'DELETE') {
+    $userId = (int)($_GET['user_id'] ?? 0);
+    if ($userId <= 0) {
+        http_response_code(400);
+        echo json_encode(["success" => false, "message" => "Valid user_id is required."]);
+        exit();
+    }
+
+    $stmt = $pdo->prepare("DELETE FROM users WHERE id = ?");
+    if ($stmt->execute([$userId])) {
+        echo json_encode(["success" => true, "message" => "Account successfully deleted."]);
+    } else {
+        http_response_code(500);
+        echo json_encode(["success" => false, "message" => "Failed to delete account."]);
+    }
+    exit();
+}
+
+if ($action === 'saved_destinations' && $method === 'GET') {
+    $userId = (int)($_GET['user_id'] ?? 0);
+    $stmt = $pdo->prepare("
+        SELECT d.* 
+        FROM destinations d 
+        JOIN user_saved_destinations s ON d.id = s.destination_id 
+        WHERE s.user_id = ?
+    ");
+    $stmt->execute([$userId]);
+    echo json_encode(["success" => true, "saved_destinations" => $stmt->fetchAll()]);
+    exit();
+}
+
+if ($action === 'toggle_saved_destination' && $method === 'POST') {
+    $userId = (int)($data['user_id'] ?? 0);
+    $destId = (int)($data['destination_id'] ?? 0);
+
+    $check = $pdo->prepare("SELECT id FROM user_saved_destinations WHERE user_id = ? AND destination_id = ?");
+    $check->execute([$userId, $destId]);
+    if ($check->fetch()) {
+        $del = $pdo->prepare("DELETE FROM user_saved_destinations WHERE user_id = ? AND destination_id = ?");
+        $del->execute([$userId, $destId]);
+        echo json_encode(["success" => true, "message" => "Destination removed from saved list.", "is_saved" => false]);
+    } else {
+        $ins = $pdo->prepare("INSERT INTO user_saved_destinations (user_id, destination_id) VALUES (?, ?)");
+        $ins->execute([$userId, $destId]);
+        echo json_encode(["success" => true, "message" => "Destination saved!", "is_saved" => true]);
+    }
+    exit();
+}
+
+// 4. ADMIN ANALYTICS & USER MANAGEMENT API
+if ($action === 'admin_analytics' && $method === 'GET') {
+    $userId = (int)($_GET['user_id'] ?? 0);
+
+    $adminCheck = $pdo->prepare("SELECT is_admin FROM users WHERE id = ?");
+    $adminCheck->execute([$userId]);
+    $isAdmin = (int)$adminCheck->fetchColumn();
+
+    if ($isAdmin !== 1) {
+        http_response_code(403);
+        echo json_encode(["success" => false, "message" => "Access denied. Admin privileges required."]);
+        exit();
+    }
+
+    $totalUsers = (int)$pdo->query("SELECT COUNT(*) FROM users")->fetchColumn();
+    $totalTrips = (int)$pdo->query("SELECT COUNT(*) FROM trips")->fetchColumn();
+    $totalBudget = (float)$pdo->query("SELECT COALESCE(SUM(budget), 0) FROM trips")->fetchColumn();
+    $totalActivities = (int)$pdo->query("SELECT COUNT(*) FROM stop_activities")->fetchColumn();
+
+    $popularCities = $pdo->query("
+        SELECT *, ((visit_count * 2) + view_count) as metric_score 
+        FROM destinations 
+        ORDER BY metric_score DESC, visit_count DESC 
+        LIMIT 6
+    ")->fetchAll();
+
+    $popularActivities = $pdo->query("
+        SELECT a.*, d.name as city_name, d.country 
+        FROM activities a 
+        LEFT JOIN destinations d ON a.destination_id = d.id 
+        ORDER BY a.popularity_score DESC 
+        LIMIT 6
+    ")->fetchAll();
+
+    $usersList = $pdo->query("
+        SELECT u.id, u.name, u.email, u.profile_photo_url, u.language_preference, u.is_admin, u.created_at,
+        (SELECT COUNT(*) FROM trips t WHERE t.user_id = u.id) as trip_count
+        FROM users u 
+        ORDER BY u.created_at DESC
+    ")->fetchAll();
+
+    $categoryBreakdown = $pdo->query("
+        SELECT category, COUNT(*) as count, COALESCE(SUM(cost), 0) as total_cost 
+        FROM stop_activities 
+        GROUP BY category 
+        ORDER BY count DESC
+    ")->fetchAll();
+
+    echo json_encode([
+        "success" => true,
+        "kpis" => [
+            "total_users" => $totalUsers,
+            "total_trips" => $totalTrips,
+            "total_budget" => $totalBudget,
+            "total_activities" => $totalActivities
+        ],
+        "popular_cities" => $popularCities,
+        "popular_activities" => $popularActivities,
+        "user_management" => $usersList,
+        "category_breakdown" => $categoryBreakdown
+    ]);
+    exit();
+}
+
+// 5. DASHBOARD DATA
 if ($action === 'dashboard' && $method === 'GET') {
     $userId = (int)($_GET['user_id'] ?? 0);
     if ($userId <= 0) {
@@ -108,7 +327,7 @@ if ($action === 'dashboard' && $method === 'GET') {
     exit();
 }
 
-// 3. TRIPS MANAGEMENT
+// 6. TRIPS MANAGEMENT
 if ($action === 'trips' && $method === 'GET') {
     $userId = (int)($_GET['user_id'] ?? 0);
     $stmt = $pdo->prepare("
@@ -133,12 +352,17 @@ if ($action === 'create_trip' && $method === 'POST') {
     $transportCost = (float)($data['transport_cost'] ?? 0.0);
     $hotelCost = (float)($data['hotel_cost'] ?? 0.0);
     $mealCost = (float)($data['meal_cost'] ?? 0.0);
+    $travelStyle = trim($data['travel_style'] ?? 'Cultural Exploration 🏛️');
+    $transportType = trim($data['transport_type'] ?? 'Flight ✈️');
+    $accommodationType = trim($data['accommodation_type'] ?? 'Boutique Hotel 🏨');
+    $groupSize = trim($data['group_size'] ?? 'Couple (2)');
+    $currency = trim($data['currency'] ?? 'USD ($)');
     $description = trim($data['description'] ?? '');
     $coverUrl = trim($data['cover_image_url'] ?? '');
     $shareToken = 'share_' . uniqid() . '_' . rand(1000, 9999);
 
-    $stmt = $pdo->prepare("INSERT INTO trips (user_id, title, destination, start_date, end_date, budget, transport_cost, hotel_cost, meal_cost, share_token, status, description, cover_image_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Planned', ?, ?)");
-    if ($stmt->execute([$userId, $title, $destination, $startDate, $endDate, $budget, $transportCost, $hotelCost, $mealCost, $shareToken, $description, $coverUrl])) {
+    $stmt = $pdo->prepare("INSERT INTO trips (user_id, title, destination, start_date, end_date, budget, transport_cost, hotel_cost, meal_cost, travel_style, transport_type, accommodation_type, group_size, currency, share_token, status, description, cover_image_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Planned', ?, ?)");
+    if ($stmt->execute([$userId, $title, $destination, $startDate, $endDate, $budget, $transportCost, $hotelCost, $mealCost, $travelStyle, $transportType, $accommodationType, $groupSize, $currency, $shareToken, $description, $coverUrl])) {
         echo json_encode(["success" => true, "message" => "Trip created successfully!", "trip_id" => (int)$pdo->lastInsertId(), "share_token" => $shareToken]);
     } else {
         http_response_code(500);
@@ -159,7 +383,7 @@ if ($action === 'delete_trip' && $method === 'DELETE') {
     exit();
 }
 
-// 4. ITINERARY & STOPS MANAGEMENT
+// 7. ITINERARY & STOPS MANAGEMENT
 if ($action === 'itinerary' && $method === 'GET') {
     $tripId = (int)($_GET['trip_id'] ?? 0);
     $tripStmt = $pdo->prepare("SELECT * FROM trips WHERE id = ?");
@@ -262,7 +486,6 @@ if ($action === 'delete_activity' && $method === 'DELETE') {
     exit();
 }
 
-// 5. UPDATE TRIP EXPENSE CATEGORIES
 if ($action === 'update_trip_expenses' && $method === 'POST') {
     $tripId = (int)($data['trip_id'] ?? 0);
     $transportCost = (float)($data['transport_cost'] ?? 0.0);
@@ -279,7 +502,6 @@ if ($action === 'update_trip_expenses' && $method === 'POST') {
     exit();
 }
 
-// 6. COPY TRIP TO USER ACCOUNT (Feature: Copy Trip option so another user can use the itinerary)
 if ($action === 'copy_trip' && $method === 'POST') {
     $sourceTripId = (int)($data['trip_id'] ?? 0);
     $userId = (int)($data['user_id'] ?? 0);
@@ -290,7 +512,6 @@ if ($action === 'copy_trip' && $method === 'POST') {
         exit();
     }
 
-    // Fetch original trip
     $srcStmt = $pdo->prepare("SELECT * FROM trips WHERE id = ?");
     $srcStmt->execute([$sourceTripId]);
     $srcTrip = $srcStmt->fetch();
@@ -301,11 +522,10 @@ if ($action === 'copy_trip' && $method === 'POST') {
         exit();
     }
 
-    // Insert new cloned trip
     $newTitle = 'Copy of ' . $srcTrip['title'];
     $newShareToken = 'share_' . uniqid() . '_' . rand(1000, 9999);
 
-    $insStmt = $pdo->prepare("INSERT INTO trips (user_id, title, destination, start_date, end_date, budget, transport_cost, hotel_cost, meal_cost, share_token, status, description, cover_image_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Planned', ?, ?)");
+    $insStmt = $pdo->prepare("INSERT INTO trips (user_id, title, destination, start_date, end_date, budget, transport_cost, hotel_cost, meal_cost, travel_style, transport_type, accommodation_type, group_size, currency, share_token, status, description, cover_image_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Planned', ?, ?)");
     $insStmt->execute([
         $userId,
         $newTitle,
@@ -316,6 +536,11 @@ if ($action === 'copy_trip' && $method === 'POST') {
         $srcTrip['transport_cost'],
         $srcTrip['hotel_cost'],
         $srcTrip['meal_cost'],
+        $srcTrip['travel_style'] ?? 'Cultural Exploration 🏛️',
+        $srcTrip['transport_type'] ?? 'Flight ✈️',
+        $srcTrip['accommodation_type'] ?? 'Boutique Hotel 🏨',
+        $srcTrip['group_size'] ?? 'Couple (2)',
+        $srcTrip['currency'] ?? 'USD ($)',
         $newShareToken,
         $srcTrip['description'],
         $srcTrip['cover_image_url']
@@ -323,7 +548,6 @@ if ($action === 'copy_trip' && $method === 'POST') {
 
     $newTripId = (int)$pdo->lastInsertId();
 
-    // Copy stops & activities
     $stopsStmt = $pdo->prepare("SELECT * FROM trip_stops WHERE trip_id = ?");
     $stopsStmt->execute([$sourceTripId]);
     $stops = $stopsStmt->fetchAll();
@@ -367,7 +591,7 @@ if ($action === 'copy_trip' && $method === 'POST') {
     exit();
 }
 
-// 7. CITY SEARCH & RECOMMENDED CITIES API
+// 8. CITY SEARCH & RECOMMENDED CITIES API
 if ($action === 'cities' && $method === 'GET') {
     $query = trim($_GET['q'] ?? '');
     $region = trim($_GET['region'] ?? 'All');
@@ -416,7 +640,7 @@ if ($action === 'record_city_view' && $method === 'POST') {
     exit();
 }
 
-// 8. ACTIVITY SEARCH API
+// 9. ACTIVITY SEARCH API
 if ($action === 'activities' && $method === 'GET') {
     $query = trim($_GET['q'] ?? '');
     $category = trim($_GET['category'] ?? 'All');
