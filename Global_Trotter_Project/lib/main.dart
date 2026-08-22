@@ -55,7 +55,7 @@ class MainShellScreen extends StatefulWidget {
 }
 
 class _MainShellScreenState extends State<MainShellScreen> {
-  int currentTabIndex = 0; // 0: Dashboard, 1: My Trips, 2: Create Trip, 3: Itinerary Builder, 4: Itinerary View
+  int currentTabIndex = 0; // 0: Dashboard, 1: My Trips, 2: City Search, 3: Activity Search, 4: Create Trip, 5: Builder, 6: View
   Map<String, dynamic>? selectedTripForItinerary;
 
   void _navigateToTab(int index, {Map<String, dynamic>? trip}) {
@@ -98,10 +98,12 @@ class _MainShellScreenState extends State<MainShellScreen> {
                 color: Color(0xFF0F172A),
               ),
             ),
-            const SizedBox(width: 32),
+            const SizedBox(width: 28),
             _buildNavTab(0, 'Dashboard', Icons.dashboard_outlined),
             _buildNavTab(1, 'My Trips', Icons.card_travel_outlined),
-            _buildNavTab(2, 'Create Trip', Icons.add_circle_outline),
+            _buildNavTab(2, 'Explore Cities', Icons.location_city_outlined),
+            _buildNavTab(3, 'Explore Activities', Icons.local_activity_outlined),
+            _buildNavTab(4, 'Create Trip', Icons.add_circle_outline),
           ],
         ),
         actions: [
@@ -144,7 +146,7 @@ class _MainShellScreenState extends State<MainShellScreen> {
       onTap: () => _navigateToTab(index),
       borderRadius: BorderRadius.circular(8),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
           color: isSelected ? const Color(0xFFEFF6FF) : Colors.transparent,
           borderRadius: BorderRadius.circular(8),
@@ -156,7 +158,7 @@ class _MainShellScreenState extends State<MainShellScreen> {
             Text(
               label,
               style: TextStyle(
-                fontSize: 14,
+                fontSize: 13,
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
                 color: isSelected ? const Color(0xFF2563EB) : const Color(0xFF64748B),
               ),
@@ -174,29 +176,33 @@ class _MainShellScreenState extends State<MainShellScreen> {
           user: widget.user,
           onLogout: widget.onLogout,
           onNavigateToMyTrips: () => _navigateToTab(1),
-          onNavigateToCreateTrip: () => _navigateToTab(2),
-          onBuildItinerary: (trip) => _navigateToTab(3, trip: trip),
+          onNavigateToCreateTrip: () => _navigateToTab(4),
+          onBuildItinerary: (trip) => _navigateToTab(5, trip: trip),
         );
       case 1:
         return MyTripsScreen(
           user: widget.user,
-          onCreateNewTrip: () => _navigateToTab(2),
-          onBuildItinerary: (trip) => _navigateToTab(3, trip: trip),
-          onViewItinerary: (trip) => _navigateToTab(4, trip: trip),
+          onCreateNewTrip: () => _navigateToTab(4),
+          onBuildItinerary: (trip) => _navigateToTab(5, trip: trip),
+          onViewItinerary: (trip) => _navigateToTab(6, trip: trip),
         );
       case 2:
+        return CitySearchScreen(user: widget.user);
+      case 3:
+        return ActivitySearchScreen(user: widget.user);
+      case 4:
         return CreateTripScreen(
           user: widget.user,
           onTripCreated: () => _navigateToTab(1),
           onCancel: () => _navigateToTab(0),
         );
-      case 3:
+      case 5:
         if (selectedTripForItinerary == null) return const Center(child: Text('No trip selected'));
         return ItineraryBuilderScreen(
           trip: selectedTripForItinerary!,
           onBack: () => _navigateToTab(1),
         );
-      case 4:
+      case 6:
         if (selectedTripForItinerary == null) return const Center(child: Text('No trip selected'));
         return ItineraryViewScreen(
           trip: selectedTripForItinerary!,

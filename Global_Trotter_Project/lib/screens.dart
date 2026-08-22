@@ -51,7 +51,7 @@ class _AuthScreenState extends State<AuthScreen> {
         setState(() => errorMessage = res['message'] ?? 'Authentication failed.');
       }
     } catch (e) {
-      setState(() => errorMessage = 'Connection error ($e). Please ensure backend API is accessible.');
+      setState(() => errorMessage = 'Connection error ($e). Please ensure backend API is running.');
     } finally {
       if (mounted) setState(() => isLoading = false);
     }
@@ -60,12 +60,12 @@ class _AuthScreenState extends State<AuthScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: const Color(0xFFF1F5F9),
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
           child: Container(
-            constraints: const BoxConstraints(maxWidth: 440),
+            constraints: const BoxConstraints(maxWidth: 420),
             padding: const EdgeInsets.all(36.0),
             decoration: BoxDecoration(
               color: Colors.white,
@@ -73,9 +73,9 @@ class _AuthScreenState extends State<AuthScreen> {
               border: Border.all(color: const Color(0xFFE2E8F0), width: 1.5),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.04),
-                  blurRadius: 20,
-                  offset: const Offset(0, 8),
+                  color: Colors.black.withValues(alpha: 0.05),
+                  blurRadius: 24,
+                  offset: const Offset(0, 10),
                 ),
               ],
             ),
@@ -83,39 +83,69 @@ class _AuthScreenState extends State<AuthScreen> {
               key: _formKey,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(color: const Color(0xFF2563EB), borderRadius: BorderRadius.circular(10)),
-                        child: const Icon(Icons.flight_takeoff_rounded, color: Colors.white, size: 24),
-                      ),
-                      const SizedBox(width: 14),
-                      const Text('GlobeTrotter', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFF0F172A), letterSpacing: -0.5)),
-                    ],
+                  // Blue Logo Icon Badge
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF2563EB),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(Icons.flight_takeoff_rounded, color: Colors.white, size: 28),
                   ),
-                  const SizedBox(height: 28),
-                  Text(isLogin ? 'Welcome Back' : 'Create an Account', style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w700, color: Color(0xFF0F172A))),
+                  const SizedBox(height: 12),
+                  const Text(
+                    'GlobeTrotter',
+                    style: TextStyle(
+                      fontSize: 26,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF0F172A),
+                      letterSpacing: -0.5,
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+
+                  Text(
+                    isLogin ? 'Welcome Back' : 'Create an Account',
+                    style: const TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w700,
+                      color: Color(0xFF0F172A),
+                    ),
+                  ),
                   const SizedBox(height: 6),
                   Text(
-                    isLogin ? 'Sign in to access your personal travel itineraries and plans.' : 'Join GlobeTrotter to start planning multi-city journeys seamlessly.',
-                    style: const TextStyle(fontSize: 14, color: Color(0xFF64748B)),
+                    isLogin
+                        ? 'Sign in to access your personal travel itineraries and plans'
+                        : 'Join GlobeTrotter to start planning multi-city journeys',
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(fontSize: 13, color: Color(0xFF64748B)),
                   ),
                   const SizedBox(height: 24),
 
                   if (errorMessage != null) ...[
                     Container(
                       padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(color: const Color(0xFFFEF2F2), borderRadius: BorderRadius.circular(8), border: Border.all(color: const Color(0xFFFCA5A5))),
-                      child: Text(errorMessage!, style: const TextStyle(color: Color(0xFF991B1B), fontSize: 13)),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFEF2F2),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: const Color(0xFFFCA5A5)),
+                      ),
+                      child: Text(
+                        errorMessage!,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(color: Color(0xFF991B1B), fontSize: 13),
+                      ),
                     ),
                     const SizedBox(height: 16),
                   ],
 
                   if (!isLogin) ...[
-                    const Text('Full Name', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF334155))),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: const Text('Full Name', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF334155))),
+                    ),
                     const SizedBox(height: 6),
                     TextFormField(
                       controller: _nameController,
@@ -125,28 +155,34 @@ class _AuthScreenState extends State<AuthScreen> {
                     const SizedBox(height: 16),
                   ],
 
-                  const Text('Email Address', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF334155))),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: const Text('Email Address', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF334155))),
+                  ),
                   const SizedBox(height: 6),
                   TextFormField(
                     controller: _emailController,
-                    decoration: _inputDecoration('alex@globetrotter.com', Icons.email_outlined),
+                    decoration: _inputDecoration('name@company.com', Icons.email_outlined),
                     validator: (v) => (v == null || !v.contains('@')) ? 'Please enter a valid email' : null,
                   ),
                   const SizedBox(height: 16),
 
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text('Password', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF334155))),
-                      if (isLogin)
-                        TextButton(
-                          onPressed: () {
-                            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Reset link sent to your email.')));
-                          },
-                          style: TextButton.styleFrom(padding: EdgeInsets.zero, minimumSize: Size.zero, tapTargetSize: MaterialTapTargetSize.shrinkWrap),
-                          child: const Text('Forgot Password?', style: TextStyle(fontSize: 13, color: Color(0xFF2563EB), fontWeight: FontWeight.w500)),
-                        ),
-                    ],
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text('Password', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF334155))),
+                        if (isLogin)
+                          TextButton(
+                            onPressed: () {
+                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Reset password instructions sent.')));
+                            },
+                            style: TextButton.styleFrom(padding: EdgeInsets.zero, minimumSize: Size.zero, tapTargetSize: MaterialTapTargetSize.shrinkWrap),
+                            child: const Text('Forgot Password?', style: TextStyle(fontSize: 13, color: Color(0xFF2563EB), fontWeight: FontWeight.w500)),
+                          ),
+                      ],
+                    ),
                   ),
                   const SizedBox(height: 6),
                   TextFormField(
@@ -173,7 +209,12 @@ class _AuthScreenState extends State<AuthScreen> {
                     height: 46,
                     child: ElevatedButton(
                       onPressed: isLoading ? null : _submit,
-                      style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF2563EB), foregroundColor: Colors.white, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF2563EB),
+                        foregroundColor: Colors.white,
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      ),
                       child: isLoading
                           ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
                           : Text(isLogin ? 'Sign In' : 'Create Account', style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
@@ -216,7 +257,7 @@ class _AuthScreenState extends State<AuthScreen> {
 }
 
 // ==========================================
-// 2. DASHBOARD SCREEN
+// 2. DASHBOARD SCREEN (Pixel-Perfect Mockup Match)
 // ==========================================
 class DashboardScreen extends StatefulWidget {
   final Map<String, dynamic> user;
@@ -296,6 +337,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    // Welcome Banner
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -304,23 +346,28 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           children: [
                             Text(
                               'Welcome back, ${widget.user['name']} 👋',
-                              style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Color(0xFF0F172A), letterSpacing: -0.5),
+                              style: const TextStyle(
+                                fontSize: 28,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF0F172A),
+                                letterSpacing: -0.5,
+                              ),
                             ),
                             const SizedBox(height: 4),
                             const Text(
-                              'Here is an overview of your planned journeys and travel budget.',
-                              style: TextStyle(fontSize: 14, color: Color(0xFF64748B)),
+                              'Your next adventure awaits. Let\'s start planning!',
+                              style: TextStyle(fontSize: 15, color: Color(0xFF64748B)),
                             ),
                           ],
                         ),
                         ElevatedButton.icon(
                           onPressed: widget.onNavigateToCreateTrip,
-                          icon: const Icon(Icons.add_rounded, size: 20),
-                          label: const Text('Plan New Trip', style: TextStyle(fontWeight: FontWeight.w600)),
+                          icon: const Icon(Icons.add, size: 20),
+                          label: const Text('Plan New Trip', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFF2563EB),
                             foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                            padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 16),
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                             elevation: 0,
                           ),
@@ -329,41 +376,90 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     ),
                     const SizedBox(height: 28),
 
+                    // 3 KPI Statistic Cards
                     LayoutBuilder(
                       builder: (context, constraints) {
                         final double width = (constraints.maxWidth - 32) / 3;
                         return Row(
                           children: [
-                            _buildMetricCard(width, 'Total Trips', '${stats['total_trips']}', Icons.map_outlined, const Color(0xFF2563EB)),
+                            _buildKPICard(
+                              width: width,
+                              label: 'Total Trips:',
+                              value: '${stats['total_trips']}',
+                              icon: Icons.flight_outlined,
+                            ),
                             const SizedBox(width: 16),
-                            _buildMetricCard(width, 'Active / Upcoming', '${stats['active_trips']}', Icons.flight_outlined, const Color(0xFF059669)),
-                            const SizedBox(width: 16),
-                            _buildMetricCard(width, 'Estimated Budget', '\$${(stats['total_budget'] as num).toStringAsFixed(2)}', Icons.account_balance_wallet_outlined, const Color(0xFFD97706)),
+                            _buildKPICard(
+                              width: width,
+                              label: 'Active / Upcoming:',
+                              value: '${stats['active_trips']}',
+                              icon: Icons.calendar_today_outlined,
+                            ),
+                            _buildBudgetKPICard(
+                              width: width,
+                              totalBudget: (stats['total_budget'] as num).toDouble(),
+                            ),
                           ],
                         );
                       },
                     ),
                     const SizedBox(height: 36),
 
+                    // Main Content Split Layout
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        // Left Section: My Recent Trips
                         Expanded(
                           flex: 3,
                           child: Container(
                             padding: const EdgeInsets.all(24),
-                            decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(14), border: Border.all(color: const Color(0xFFE2E8F0))),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(14),
+                              border: Border.all(color: const Color(0xFFE2E8F0)),
+                            ),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
-                                    const Text('My Recent Trips', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
-                                    TextButton(onPressed: widget.onNavigateToMyTrips, child: const Text('View All Trips →', style: TextStyle(color: Color(0xFF2563EB), fontWeight: FontWeight.w600))),
+                                    const Text(
+                                      'My Recent Trips',
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                        color: Color(0xFF0F172A),
+                                      ),
+                                    ),
+                                    Row(
+                                      children: [
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                          decoration: BoxDecoration(
+                                            color: const Color(0xFFF1F5F9),
+                                            borderRadius: BorderRadius.circular(6),
+                                            border: Border.all(color: const Color(0xFFE2E8F0)),
+                                          ),
+                                          child: const Row(
+                                            children: [
+                                              Text('Filter', style: TextStyle(fontSize: 12, color: Color(0xFF475569))),
+                                              Icon(Icons.keyboard_arrow_down, size: 16, color: Color(0xFF475569)),
+                                            ],
+                                          ),
+                                        ),
+                                        const SizedBox(width: 12),
+                                        TextButton(
+                                          onPressed: widget.onNavigateToMyTrips,
+                                          style: TextButton.styleFrom(padding: EdgeInsets.zero),
+                                          child: const Text('View all', style: TextStyle(color: Color(0xFF2563EB), fontWeight: FontWeight.w600)),
+                                        ),
+                                      ],
+                                    ),
                                   ],
                                 ),
-                                const SizedBox(height: 18),
+                                const SizedBox(height: 20),
                                 if (trips.isEmpty)
                                   Padding(
                                     padding: const EdgeInsets.symmetric(vertical: 24),
@@ -382,8 +478,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                     shrinkWrap: true,
                                     physics: const NeverScrollableScrollPhysics(),
                                     itemCount: trips.length,
-                                    separatorBuilder: (context, index) => const SizedBox(height: 12),
-                                    itemBuilder: (context, index) => _buildTripTile(Map<String, dynamic>.from(trips[index])),
+                                    separatorBuilder: (context, index) => const SizedBox(height: 16),
+                                    itemBuilder: (context, index) {
+                                      final trip = Map<String, dynamic>.from(trips[index]);
+                                      return _buildMockupTripCard(trip);
+                                    },
                                   ),
                               ],
                             ),
@@ -391,24 +490,56 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         ),
                         const SizedBox(width: 24),
 
+                        // Right Section: Recommended Cities
                         Expanded(
                           flex: 2,
                           child: Container(
                             padding: const EdgeInsets.all(24),
-                            decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(14), border: Border.all(color: const Color(0xFFE2E8F0))),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(14),
+                              border: Border.all(color: const Color(0xFFE2E8F0)),
+                            ),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Text('Recommended Cities', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
-                                const SizedBox(height: 4),
-                                const Text('Popular destinations for your next journey', style: TextStyle(fontSize: 13, color: Color(0xFF64748B))),
-                                const SizedBox(height: 18),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    const Text(
+                                      'Recommended Cities',
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                        color: Color(0xFF0F172A),
+                                      ),
+                                    ),
+                                    Row(
+                                      children: [
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                                          decoration: BoxDecoration(color: const Color(0xFFF1F5F9), borderRadius: BorderRadius.circular(6)),
+                                          child: const Row(
+                                            children: [
+                                              Text('All', style: TextStyle(fontSize: 11, color: Color(0xFF475569))),
+                                              Icon(Icons.keyboard_arrow_down, size: 14),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 20),
                                 ListView.separated(
                                   shrinkWrap: true,
                                   physics: const NeverScrollableScrollPhysics(),
                                   itemCount: destinations.length,
                                   separatorBuilder: (context, index) => const SizedBox(height: 14),
-                                  itemBuilder: (context, index) => _buildDestinationCard(destinations[index]),
+                                  itemBuilder: (context, index) {
+                                    final dest = destinations[index];
+                                    return _buildMockupCityCard(dest);
+                                  },
                                 ),
                               ],
                             ),
@@ -421,95 +552,214 @@ class _DashboardScreenState extends State<DashboardScreen> {
               );
   }
 
-  Widget _buildMetricCard(double width, String title, String value, IconData icon, Color color) {
+  Widget _buildKPICard({
+    required double width,
+    required String label,
+    required String value,
+    required IconData icon,
+  }) {
     return Container(
       width: width,
       padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(14), border: Border.all(color: const Color(0xFFE2E8F0))),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFFE2E8F0)),
+      ),
       child: Row(
         children: [
-          Container(padding: const EdgeInsets.all(12), decoration: BoxDecoration(color: color.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(12)), child: Icon(icon, color: color, size: 24)),
-          const SizedBox(width: 16),
-          Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(title, style: const TextStyle(fontSize: 13, color: Color(0xFF64748B), fontWeight: FontWeight.w500)),
-            const SizedBox(height: 2),
-            Text(value, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
-          ]),
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: const Color(0xFFF1F5F9),
+              shape: BoxShape.circle,
+              border: Border.all(color: const Color(0xFFCBD5E1)),
+            ),
+            child: Icon(icon, color: const Color(0xFF475569), size: 20),
+          ),
+          const SizedBox(width: 14),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(label, style: const TextStyle(fontSize: 13, color: Color(0xFF64748B), fontWeight: FontWeight.w500)),
+              const SizedBox(height: 2),
+              Text(value, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
+            ],
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildTripTile(Map<String, dynamic> trip) {
-    return InkWell(
-      onTap: () => widget.onBuildItinerary(trip),
-      borderRadius: BorderRadius.circular(10),
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(color: const Color(0xFFF8FAFC), borderRadius: BorderRadius.circular(10), border: Border.all(color: const Color(0xFFE2E8F0))),
-        child: Row(
-          children: [
-            Container(padding: const EdgeInsets.all(10), decoration: BoxDecoration(color: Colors.white, shape: BoxShape.circle, border: Border.all(color: const Color(0xFFCBD5E1))), child: const Icon(Icons.explore_outlined, color: Color(0xFF2563EB), size: 20)),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(trip['title'] ?? 'Untitled Trip', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Color(0xFF0F172A))),
-                  const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      const Icon(Icons.location_on_outlined, size: 14, color: Color(0xFF64748B)),
-                      const SizedBox(width: 4),
-                      Text(trip['destination'] ?? '', style: const TextStyle(fontSize: 13, color: Color(0xFF475569))),
-                      const SizedBox(width: 12),
-                      const Icon(Icons.calendar_today_outlined, size: 13, color: Color(0xFF64748B)),
-                      const SizedBox(width: 4),
-                      Text('${trip['start_date']} to ${trip['end_date']}', style: const TextStyle(fontSize: 12, color: Color(0xFF64748B))),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Text('\$${(trip['budget'] as num).toStringAsFixed(2)}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Color(0xFF0F172A))),
-                const SizedBox(height: 4),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                  decoration: BoxDecoration(color: const Color(0xFFECFDF5), borderRadius: BorderRadius.circular(6), border: Border.all(color: const Color(0xFFA7F3D0))),
-                  child: Text(trip['status'] ?? 'Planned', style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: Color(0xFF047857))),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildDestinationCard(Map<String, dynamic> dest) {
+  Widget _buildBudgetKPICard({required double width, required double totalBudget}) {
     return Container(
-      decoration: BoxDecoration(color: const Color(0xFFF8FAFC), borderRadius: BorderRadius.circular(10), border: Border.all(color: const Color(0xFFE2E8F0))),
-      clipBehavior: Clip.antiAlias,
+      width: width,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFFE2E8F0)),
+      ),
       child: Row(
         children: [
-          Image.network(dest['image_url'] ?? '', width: 90, height: 70, fit: BoxFit.cover, errorBuilder: (context, error, stackTrace) => Container(width: 90, height: 70, color: const Color(0xFFE2E8F0), child: const Icon(Icons.image_not_supported_outlined, color: Color(0xFF94A3B8)))),
-          const SizedBox(width: 12),
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: const Color(0xFFF1F5F9),
+              shape: BoxShape.circle,
+              border: Border.all(color: const Color(0xFFCBD5E1)),
+            ),
+            child: const Icon(Icons.account_balance_wallet_outlined, color: Color(0xFF475569), size: 20),
+          ),
+          const SizedBox(width: 14),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('${dest['name']}, ${dest['country']}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Color(0xFF0F172A))),
+                const Text('Estimated Budget:', style: TextStyle(fontSize: 13, color: Color(0xFF64748B), fontWeight: FontWeight.w500)),
                 const SizedBox(height: 2),
-                Text(dest['description'] ?? '', maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 12, color: Color(0xFF64748B))),
+                Text('\$${totalBudget.toStringAsFixed(2)}', style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
+                const SizedBox(height: 2),
+                Text('Spent: \$0.00 | Planned: \$${totalBudget.toStringAsFixed(2)}', style: const TextStyle(fontSize: 11, color: Color(0xFF94A3B8))),
               ],
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.only(right: 12.0),
-            child: Text('~\$${(dest['average_cost'] as num).toInt()}', style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13, color: Color(0xFF2563EB))),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMockupTripCard(Map<String, dynamic> trip) {
+    final String coverUrl = (trip['cover_image_url'] != null && trip['cover_image_url'].toString().isNotEmpty)
+        ? trip['cover_image_url']
+        : 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=600&q=80';
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFFE2E8F0)),
+      ),
+      child: Row(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: Image.network(
+              coverUrl,
+              width: 100,
+              height: 80,
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) => Container(width: 100, height: 80, color: const Color(0xFFE2E8F0), child: const Icon(Icons.image)),
+            ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  trip['title'] ?? 'Untitled Trip',
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Color(0xFF0F172A)),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Status: ${trip['destination']}',
+                  style: const TextStyle(fontSize: 13, color: Color(0xFF475569)),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  'Dates: ${trip['start_date']} to ${trip['end_date']}',
+                  style: const TextStyle(fontSize: 12, color: Color(0xFF64748B)),
+                ),
+                const SizedBox(height: 6),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFD1FAE5),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Text(
+                    'Status: ${trip['status'] ?? 'Confirmed'}',
+                    style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Color(0xFF047857)),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Column(
+            children: [
+              OutlinedButton(
+                onPressed: () => widget.onBuildItinerary(trip),
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                  side: const BorderSide(color: Color(0xFFCBD5E1)),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+                ),
+                child: const Text('View Details', style: TextStyle(fontSize: 12, color: Color(0xFF334155))),
+              ),
+              const SizedBox(height: 6),
+              OutlinedButton(
+                onPressed: () => widget.onBuildItinerary(trip),
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+                  side: const BorderSide(color: Color(0xFFCBD5E1)),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+                ),
+                child: const Text('Edit Trip', style: TextStyle(fontSize: 12, color: Color(0xFF334155))),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMockupCityCard(Map<String, dynamic> dest) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFFE2E8F0)),
+      ),
+      child: Row(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: Image.network(
+              dest['image_url'] ?? '',
+              width: 80,
+              height: 65,
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) => Container(width: 80, height: 65, color: const Color(0xFFE2E8F0), child: const Icon(Icons.image)),
+            ),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  dest['name'] ?? '',
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Color(0xFF0F172A)),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  dest['country'] ?? '',
+                  style: const TextStyle(fontSize: 12, color: Color(0xFF64748B)),
+                ),
+                const SizedBox(height: 2),
+                const Text(
+                  'Estimated Budget',
+                  style: TextStyle(fontSize: 11, color: Color(0xFF94A3B8)),
+                ),
+              ],
+            ),
+          ),
+          Text(
+            '\$${(dest['average_cost'] as num).toStringAsFixed(2)}',
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Color(0xFF0F172A)),
           ),
         ],
       ),
@@ -542,7 +792,6 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
   final _coverUrlController = TextEditingController();
 
   bool isSubmitting = false;
-  String? error;
 
   @override
   void dispose() {
@@ -579,7 +828,7 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 28.0),
+      padding: const EdgeInsets.all(32.0),
       child: Center(
         child: Container(
           constraints: const BoxConstraints(maxWidth: 680),
@@ -1049,7 +1298,7 @@ class ItineraryViewScreen extends StatelessWidget {
 }
 
 // ==========================================
-// 7. CITY SEARCH SCREEN (Feature 7)
+// 7. CITY SEARCH SCREEN
 // ==========================================
 class CitySearchScreen extends StatefulWidget {
   final Map<String, dynamic> user;
@@ -1093,7 +1342,6 @@ class _CitySearchScreenState extends State<CitySearchScreen> {
           const Text('Discover global destinations, filter by region, view cost index & popularity ratings.', style: TextStyle(fontSize: 14, color: Color(0xFF64748B))),
           const SizedBox(height: 24),
 
-          // Search & Filter Row
           Row(
             children: [
               Expanded(
@@ -1199,7 +1447,7 @@ class _CitySearchScreenState extends State<CitySearchScreen> {
 }
 
 // ==========================================
-// 8. ACTIVITY SEARCH SCREEN (Feature 8)
+// 8. ACTIVITY SEARCH SCREEN
 // ==========================================
 class ActivitySearchScreen extends StatefulWidget {
   final Map<String, dynamic> user;
@@ -1243,7 +1491,6 @@ class _ActivitySearchScreenState extends State<ActivitySearchScreen> {
           const Text('Enrich your trip itineraries with top sightseeing, culture, food tours, and adventures.', style: TextStyle(fontSize: 14, color: Color(0xFF64748B))),
           const SizedBox(height: 24),
 
-          // Search & Category Chips
           TextField(
             onChanged: (v) {
               query = v;
