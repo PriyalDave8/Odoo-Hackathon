@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'api_service.dart';
 
 // ==========================================
@@ -85,40 +86,18 @@ class _AuthScreenState extends State<AuthScreen> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  // Blue Logo Icon Badge
                   Container(
                     padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF2563EB),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
+                    decoration: BoxDecoration(color: const Color(0xFF2563EB), borderRadius: BorderRadius.circular(12)),
                     child: const Icon(Icons.flight_takeoff_rounded, color: Colors.white, size: 28),
                   ),
                   const SizedBox(height: 12),
-                  const Text(
-                    'GlobeTrotter',
-                    style: TextStyle(
-                      fontSize: 26,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF0F172A),
-                      letterSpacing: -0.5,
-                    ),
-                  ),
+                  const Text('GlobeTrotter', style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Color(0xFF0F172A), letterSpacing: -0.5)),
                   const SizedBox(height: 24),
-
-                  Text(
-                    isLogin ? 'Welcome Back' : 'Create an Account',
-                    style: const TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.w700,
-                      color: Color(0xFF0F172A),
-                    ),
-                  ),
+                  Text(isLogin ? 'Welcome Back' : 'Create an Account', style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w700, color: Color(0xFF0F172A))),
                   const SizedBox(height: 6),
                   Text(
-                    isLogin
-                        ? 'Sign in to access your personal travel itineraries and plans'
-                        : 'Join GlobeTrotter to start planning multi-city journeys',
+                    isLogin ? 'Sign in to access your personal travel itineraries and plans' : 'Join GlobeTrotter to start planning multi-city journeys',
                     textAlign: TextAlign.center,
                     style: const TextStyle(fontSize: 13, color: Color(0xFF64748B)),
                   ),
@@ -127,44 +106,22 @@ class _AuthScreenState extends State<AuthScreen> {
                   if (errorMessage != null) ...[
                     Container(
                       padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFFEF2F2),
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: const Color(0xFFFCA5A5)),
-                      ),
-                      child: Text(
-                        errorMessage!,
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(color: Color(0xFF991B1B), fontSize: 13),
-                      ),
+                      decoration: BoxDecoration(color: const Color(0xFFFEF2F2), borderRadius: BorderRadius.circular(8), border: Border.all(color: const Color(0xFFFCA5A5))),
+                      child: Text(errorMessage!, textAlign: TextAlign.center, style: const TextStyle(color: Color(0xFF991B1B), fontSize: 13)),
                     ),
                     const SizedBox(height: 16),
                   ],
 
                   if (!isLogin) ...[
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: const Text('Full Name', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF334155))),
-                    ),
+                    const Align(alignment: Alignment.centerLeft, child: Text('Full Name', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF334155)))),
                     const SizedBox(height: 6),
-                    TextFormField(
-                      controller: _nameController,
-                      decoration: _inputDecoration('Alex Morgan', Icons.person_outline),
-                      validator: (v) => (v == null || v.trim().isEmpty) ? 'Please enter your name' : null,
-                    ),
+                    TextFormField(controller: _nameController, decoration: _inputDecoration('Alex Morgan', Icons.person_outline), validator: (v) => (v == null || v.trim().isEmpty) ? 'Please enter your name' : null),
                     const SizedBox(height: 16),
                   ],
 
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: const Text('Email Address', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF334155))),
-                  ),
+                  const Align(alignment: Alignment.centerLeft, child: Text('Email Address', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF334155)))),
                   const SizedBox(height: 6),
-                  TextFormField(
-                    controller: _emailController,
-                    decoration: _inputDecoration('name@company.com', Icons.email_outlined),
-                    validator: (v) => (v == null || !v.contains('@')) ? 'Please enter a valid email' : null,
-                  ),
+                  TextFormField(controller: _emailController, decoration: _inputDecoration('name@company.com', Icons.email_outlined), validator: (v) => (v == null || !v.contains('@')) ? 'Please enter a valid email' : null),
                   const SizedBox(height: 16),
 
                   Align(
@@ -175,9 +132,7 @@ class _AuthScreenState extends State<AuthScreen> {
                         const Text('Password', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF334155))),
                         if (isLogin)
                           TextButton(
-                            onPressed: () {
-                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Reset password instructions sent.')));
-                            },
+                            onPressed: () => ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Reset password instructions sent.'))),
                             style: TextButton.styleFrom(padding: EdgeInsets.zero, minimumSize: Size.zero, tapTargetSize: MaterialTapTargetSize.shrinkWrap),
                             child: const Text('Forgot Password?', style: TextStyle(fontSize: 13, color: Color(0xFF2563EB), fontWeight: FontWeight.w500)),
                           ),
@@ -192,11 +147,7 @@ class _AuthScreenState extends State<AuthScreen> {
                       '••••••••',
                       Icons.lock_outline,
                       suffixIcon: IconButton(
-                        icon: Icon(
-                          _obscurePassword ? Icons.visibility_off_outlined : Icons.visibility_outlined,
-                          color: const Color(0xFF94A3B8),
-                          size: 20,
-                        ),
+                        icon: Icon(_obscurePassword ? Icons.visibility_off_outlined : Icons.visibility_outlined, color: const Color(0xFF94A3B8), size: 20),
                         onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
                       ),
                     ),
@@ -209,15 +160,8 @@ class _AuthScreenState extends State<AuthScreen> {
                     height: 46,
                     child: ElevatedButton(
                       onPressed: isLoading ? null : _submit,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF2563EB),
-                        foregroundColor: Colors.white,
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                      ),
-                      child: isLoading
-                          ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                          : Text(isLogin ? 'Sign In' : 'Create Account', style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
+                      style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF2563EB), foregroundColor: Colors.white, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+                      child: isLoading ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2)) : Text(isLogin ? 'Sign In' : 'Create Account', style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
                     ),
                   ),
                   const SizedBox(height: 20),
@@ -257,7 +201,7 @@ class _AuthScreenState extends State<AuthScreen> {
 }
 
 // ==========================================
-// 2. DASHBOARD SCREEN (Pixel-Perfect Mockup Match)
+// 2. DASHBOARD SCREEN
 // ==========================================
 class DashboardScreen extends StatefulWidget {
   final Map<String, dynamic> user;
@@ -337,152 +281,70 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Welcome Banner
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              'Welcome back, ${widget.user['name']} 👋',
-                              style: const TextStyle(
-                                fontSize: 28,
-                                fontWeight: FontWeight.bold,
-                                color: Color(0xFF0F172A),
-                                letterSpacing: -0.5,
-                              ),
-                            ),
+                            Text('Welcome back, ${widget.user['name']} 👋', style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Color(0xFF0F172A), letterSpacing: -0.5)),
                             const SizedBox(height: 4),
-                            const Text(
-                              'Your next adventure awaits. Let\'s start planning!',
-                              style: TextStyle(fontSize: 15, color: Color(0xFF64748B)),
-                            ),
+                            const Text('Your next adventure awaits. Let\'s start planning!', style: TextStyle(fontSize: 15, color: Color(0xFF64748B))),
                           ],
                         ),
                         ElevatedButton.icon(
                           onPressed: widget.onNavigateToCreateTrip,
                           icon: const Icon(Icons.add, size: 20),
                           label: const Text('Plan New Trip', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF2563EB),
-                            foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 16),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                            elevation: 0,
-                          ),
+                          style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF2563EB), foregroundColor: Colors.white, padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 16), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
                         ),
                       ],
                     ),
                     const SizedBox(height: 28),
 
-                    // 3 KPI Statistic Cards
                     LayoutBuilder(
                       builder: (context, constraints) {
                         final double width = (constraints.maxWidth - 32) / 3;
                         return Row(
                           children: [
-                            _buildKPICard(
-                              width: width,
-                              label: 'Total Trips:',
-                              value: '${stats['total_trips']}',
-                              icon: Icons.flight_outlined,
-                            ),
+                            _buildKPICard(width: width, label: 'Total Trips:', value: '${stats['total_trips']}', icon: Icons.flight_outlined),
                             const SizedBox(width: 16),
-                            _buildKPICard(
-                              width: width,
-                              label: 'Active / Upcoming:',
-                              value: '${stats['active_trips']}',
-                              icon: Icons.calendar_today_outlined,
-                            ),
-                            _buildBudgetKPICard(
-                              width: width,
-                              totalBudget: (stats['total_budget'] as num).toDouble(),
-                            ),
+                            _buildKPICard(width: width, label: 'Active / Upcoming:', value: '${stats['active_trips']}', icon: Icons.calendar_today_outlined),
+                            _buildBudgetKPICard(width: width, totalBudget: (stats['total_budget'] as num).toDouble()),
                           ],
                         );
                       },
                     ),
                     const SizedBox(height: 36),
 
-                    // Main Content Split Layout
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Left Section: My Recent Trips
                         Expanded(
                           flex: 3,
                           child: Container(
                             padding: const EdgeInsets.all(24),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(14),
-                              border: Border.all(color: const Color(0xFFE2E8F0)),
-                            ),
+                            decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(14), border: Border.all(color: const Color(0xFFE2E8F0))),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
-                                    const Text(
-                                      'My Recent Trips',
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                        color: Color(0xFF0F172A),
-                                      ),
-                                    ),
-                                    Row(
-                                      children: [
-                                        Container(
-                                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                                          decoration: BoxDecoration(
-                                            color: const Color(0xFFF1F5F9),
-                                            borderRadius: BorderRadius.circular(6),
-                                            border: Border.all(color: const Color(0xFFE2E8F0)),
-                                          ),
-                                          child: const Row(
-                                            children: [
-                                              Text('Filter', style: TextStyle(fontSize: 12, color: Color(0xFF475569))),
-                                              Icon(Icons.keyboard_arrow_down, size: 16, color: Color(0xFF475569)),
-                                            ],
-                                          ),
-                                        ),
-                                        const SizedBox(width: 12),
-                                        TextButton(
-                                          onPressed: widget.onNavigateToMyTrips,
-                                          style: TextButton.styleFrom(padding: EdgeInsets.zero),
-                                          child: const Text('View all', style: TextStyle(color: Color(0xFF2563EB), fontWeight: FontWeight.w600)),
-                                        ),
-                                      ],
-                                    ),
+                                    const Text('My Recent Trips', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
+                                    TextButton(onPressed: widget.onNavigateToMyTrips, child: const Text('View all', style: TextStyle(color: Color(0xFF2563EB), fontWeight: FontWeight.w600))),
                                   ],
                                 ),
                                 const SizedBox(height: 20),
                                 if (trips.isEmpty)
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(vertical: 24),
-                                    child: Center(
-                                      child: Column(
-                                        children: [
-                                          const Text('No trips planned yet.', style: TextStyle(color: Color(0xFF94A3B8))),
-                                          const SizedBox(height: 10),
-                                          ElevatedButton(onPressed: widget.onNavigateToCreateTrip, child: const Text('Plan New Trip')),
-                                        ],
-                                      ),
-                                    ),
-                                  )
+                                  const Padding(padding: EdgeInsets.symmetric(vertical: 24), child: Center(child: Text('No trips planned yet.', style: TextStyle(color: Color(0xFF94A3B8)))))
                                 else
                                   ListView.separated(
                                     shrinkWrap: true,
                                     physics: const NeverScrollableScrollPhysics(),
                                     itemCount: trips.length,
                                     separatorBuilder: (context, index) => const SizedBox(height: 16),
-                                    itemBuilder: (context, index) {
-                                      final trip = Map<String, dynamic>.from(trips[index]);
-                                      return _buildMockupTripCard(trip);
-                                    },
+                                    itemBuilder: (context, index) => _buildMockupTripCard(Map<String, dynamic>.from(trips[index])),
                                   ),
                               ],
                             ),
@@ -490,44 +352,25 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         ),
                         const SizedBox(width: 24),
 
-                        // Right Section: Recommended Cities
                         Expanded(
                           flex: 2,
                           child: Container(
                             padding: const EdgeInsets.all(24),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(14),
-                              border: Border.all(color: const Color(0xFFE2E8F0)),
-                            ),
+                            decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(14), border: Border.all(color: const Color(0xFFE2E8F0))),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
-                                    const Text(
-                                      'Recommended Cities',
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                        color: Color(0xFF0F172A),
-                                      ),
-                                    ),
-                                    Row(
+                                    const Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
-                                        Container(
-                                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                                          decoration: BoxDecoration(color: const Color(0xFFF1F5F9), borderRadius: BorderRadius.circular(6)),
-                                          child: const Row(
-                                            children: [
-                                              Text('All', style: TextStyle(fontSize: 11, color: Color(0xFF475569))),
-                                              Icon(Icons.keyboard_arrow_down, size: 14),
-                                            ],
-                                          ),
-                                        ),
+                                        Text('Recommended Cities', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
+                                        Text('Ranked by views & visits', style: TextStyle(fontSize: 11, color: Color(0xFF64748B))),
                                       ],
                                     ),
+                                    Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3), decoration: BoxDecoration(color: const Color(0xFFEFF6FF), borderRadius: BorderRadius.circular(6)), child: const Text('Top Ranked 🔥', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Color(0xFF2563EB)))),
                                   ],
                                 ),
                                 const SizedBox(height: 20),
@@ -536,10 +379,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                   physics: const NeverScrollableScrollPhysics(),
                                   itemCount: destinations.length,
                                   separatorBuilder: (context, index) => const SizedBox(height: 14),
-                                  itemBuilder: (context, index) {
-                                    final dest = destinations[index];
-                                    return _buildMockupCityCard(dest);
-                                  },
+                                  itemBuilder: (context, index) => _buildMockupCityCard(destinations[index]),
                                 ),
                               ],
                             ),
@@ -552,31 +392,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
               );
   }
 
-  Widget _buildKPICard({
-    required double width,
-    required String label,
-    required String value,
-    required IconData icon,
-  }) {
+  Widget _buildKPICard({required double width, required String label, required String value, required IconData icon}) {
     return Container(
       width: width,
       padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFE2E8F0)),
-      ),
+      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12), border: Border.all(color: const Color(0xFFE2E8F0))),
       child: Row(
         children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: const Color(0xFFF1F5F9),
-              shape: BoxShape.circle,
-              border: Border.all(color: const Color(0xFFCBD5E1)),
-            ),
-            child: Icon(icon, color: const Color(0xFF475569), size: 20),
-          ),
+          Container(padding: const EdgeInsets.all(10), decoration: BoxDecoration(color: const Color(0xFFF1F5F9), shape: BoxShape.circle, border: Border.all(color: const Color(0xFFCBD5E1))), child: Icon(icon, color: const Color(0xFF475569), size: 20)),
           const SizedBox(width: 14),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -595,22 +418,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return Container(
       width: width,
       padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFE2E8F0)),
-      ),
+      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12), border: Border.all(color: const Color(0xFFE2E8F0))),
       child: Row(
         children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: const Color(0xFFF1F5F9),
-              shape: BoxShape.circle,
-              border: Border.all(color: const Color(0xFFCBD5E1)),
-            ),
-            child: const Icon(Icons.account_balance_wallet_outlined, color: Color(0xFF475569), size: 20),
-          ),
+          Container(padding: const EdgeInsets.all(10), decoration: BoxDecoration(color: const Color(0xFFF1F5F9), shape: BoxShape.circle, border: Border.all(color: const Color(0xFFCBD5E1))), child: const Icon(Icons.account_balance_wallet_outlined, color: Color(0xFF475569), size: 20)),
           const SizedBox(width: 14),
           Expanded(
             child: Column(
@@ -619,8 +430,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 const Text('Estimated Budget:', style: TextStyle(fontSize: 13, color: Color(0xFF64748B), fontWeight: FontWeight.w500)),
                 const SizedBox(height: 2),
                 Text('\$${totalBudget.toStringAsFixed(2)}', style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
-                const SizedBox(height: 2),
-                Text('Spent: \$0.00 | Planned: \$${totalBudget.toStringAsFixed(2)}', style: const TextStyle(fontSize: 11, color: Color(0xFF94A3B8))),
               ],
             ),
           ),
@@ -630,86 +439,29 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Widget _buildMockupTripCard(Map<String, dynamic> trip) {
-    final String coverUrl = (trip['cover_image_url'] != null && trip['cover_image_url'].toString().isNotEmpty)
-        ? trip['cover_image_url']
-        : 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=600&q=80';
-
     return Container(
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFE2E8F0)),
-      ),
+      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12), border: Border.all(color: const Color(0xFFE2E8F0))),
       child: Row(
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(8),
-            child: Image.network(
-              coverUrl,
-              width: 100,
-              height: 80,
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) => Container(width: 100, height: 80, color: const Color(0xFFE2E8F0), child: const Icon(Icons.image)),
-            ),
+            child: Image.network(trip['cover_image_url'] ?? '', width: 100, height: 80, fit: BoxFit.cover, errorBuilder: (context, error, stackTrace) => Container(width: 100, height: 80, color: const Color(0xFFE2E8F0), child: const Icon(Icons.image))),
           ),
           const SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  trip['title'] ?? 'Untitled Trip',
-                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Color(0xFF0F172A)),
-                ),
+                Text(trip['title'] ?? '', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Color(0xFF0F172A))),
                 const SizedBox(height: 4),
-                Text(
-                  'Status: ${trip['destination']}',
-                  style: const TextStyle(fontSize: 13, color: Color(0xFF475569)),
-                ),
+                Text('Destinations: ${trip['destination']}', style: const TextStyle(fontSize: 13, color: Color(0xFF475569))),
                 const SizedBox(height: 2),
-                Text(
-                  'Dates: ${trip['start_date']} to ${trip['end_date']}',
-                  style: const TextStyle(fontSize: 12, color: Color(0xFF64748B)),
-                ),
-                const SizedBox(height: 6),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFD1FAE5),
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  child: Text(
-                    'Status: ${trip['status'] ?? 'Confirmed'}',
-                    style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Color(0xFF047857)),
-                  ),
-                ),
+                Text('Dates: ${trip['start_date']} to ${trip['end_date']}', style: const TextStyle(fontSize: 12, color: Color(0xFF64748B))),
               ],
             ),
           ),
-          Column(
-            children: [
-              OutlinedButton(
-                onPressed: () => widget.onBuildItinerary(trip),
-                style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                  side: const BorderSide(color: Color(0xFFCBD5E1)),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
-                ),
-                child: const Text('View Details', style: TextStyle(fontSize: 12, color: Color(0xFF334155))),
-              ),
-              const SizedBox(height: 6),
-              OutlinedButton(
-                onPressed: () => widget.onBuildItinerary(trip),
-                style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
-                  side: const BorderSide(color: Color(0xFFCBD5E1)),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
-                ),
-                child: const Text('Edit Trip', style: TextStyle(fontSize: 12, color: Color(0xFF334155))),
-              ),
-            ],
-          ),
+          OutlinedButton(onPressed: () => widget.onBuildItinerary(trip), child: const Text('View Plan')),
         ],
       ),
     );
@@ -718,49 +470,26 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget _buildMockupCityCard(Map<String, dynamic> dest) {
     return Container(
       padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFE2E8F0)),
-      ),
+      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12), border: Border.all(color: const Color(0xFFE2E8F0))),
       child: Row(
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(8),
-            child: Image.network(
-              dest['image_url'] ?? '',
-              width: 80,
-              height: 65,
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) => Container(width: 80, height: 65, color: const Color(0xFFE2E8F0), child: const Icon(Icons.image)),
-            ),
+            child: Image.network(dest['image_url'] ?? '', width: 80, height: 65, fit: BoxFit.cover, errorBuilder: (context, error, stackTrace) => Container(width: 80, height: 65, color: const Color(0xFFE2E8F0), child: const Icon(Icons.image))),
           ),
           const SizedBox(width: 14),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  dest['name'] ?? '',
-                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Color(0xFF0F172A)),
-                ),
+                Text(dest['name'] ?? '', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Color(0xFF0F172A))),
+                Text(dest['country'] ?? '', style: const TextStyle(fontSize: 12, color: Color(0xFF64748B))),
                 const SizedBox(height: 2),
-                Text(
-                  dest['country'] ?? '',
-                  style: const TextStyle(fontSize: 12, color: Color(0xFF64748B)),
-                ),
-                const SizedBox(height: 2),
-                const Text(
-                  'Estimated Budget',
-                  style: TextStyle(fontSize: 11, color: Color(0xFF94A3B8)),
-                ),
+                Text('👁️ ${dest['view_count']} views • ✈️ ${dest['visit_count']} visits', style: const TextStyle(fontSize: 10, color: Color(0xFF2563EB), fontWeight: FontWeight.w600)),
               ],
             ),
           ),
-          Text(
-            '\$${(dest['average_cost'] as num).toStringAsFixed(2)}',
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Color(0xFF0F172A)),
-          ),
+          Text('\$${(dest['average_cost'] as num).toStringAsFixed(2)}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
         ],
       ),
     );
@@ -788,8 +517,17 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
   final _startDateController = TextEditingController(text: '2026-09-10');
   final _endDateController = TextEditingController(text: '2026-09-20');
   final _budgetController = TextEditingController(text: '2500');
+  final _transportController = TextEditingController(text: '650');
+  final _hotelController = TextEditingController(text: '1100');
+  final _mealController = TextEditingController(text: '550');
   final _descriptionController = TextEditingController();
   final _coverUrlController = TextEditingController();
+
+  String _selectedTravelStyle = 'Cultural Exploration 🏛️';
+  String _selectedTransportType = 'Flight ✈️';
+  String _selectedAccommodation = 'Boutique Hotel 🏨';
+  String _selectedGroupSize = 'Couple (2)';
+  String _selectedCurrency = 'USD (\$)';
 
   bool isSubmitting = false;
 
@@ -800,6 +538,9 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
     _startDateController.dispose();
     _endDateController.dispose();
     _budgetController.dispose();
+    _transportController.dispose();
+    _hotelController.dispose();
+    _mealController.dispose();
     _descriptionController.dispose();
     _coverUrlController.dispose();
     super.dispose();
@@ -815,6 +556,14 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
       startDate: _startDateController.text.trim(),
       endDate: _endDateController.text.trim(),
       budget: double.tryParse(_budgetController.text) ?? 1000.0,
+      transportCost: double.tryParse(_transportController.text) ?? 0.0,
+      hotelCost: double.tryParse(_hotelController.text) ?? 0.0,
+      mealCost: double.tryParse(_mealController.text) ?? 0.0,
+      travelStyle: _selectedTravelStyle,
+      transportType: _selectedTransportType,
+      accommodationType: _selectedAccommodation,
+      groupSize: _selectedGroupSize,
+      currency: _selectedCurrency,
       description: _descriptionController.text.trim(),
       coverImageUrl: _coverUrlController.text.trim(),
     );
@@ -831,7 +580,7 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
       padding: const EdgeInsets.all(32.0),
       child: Center(
         child: Container(
-          constraints: const BoxConstraints(maxWidth: 680),
+          constraints: const BoxConstraints(maxWidth: 750),
           padding: const EdgeInsets.all(32.0),
           decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16), border: Border.all(color: const Color(0xFFE2E8F0))),
           child: Form(
@@ -842,39 +591,38 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Row(
-                      children: [
-                        Icon(Icons.add_circle_outline, color: Color(0xFF2563EB), size: 28),
-                        SizedBox(width: 12),
-                        Text('Create New Trip', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
-                      ],
-                    ),
+                    const Row(children: [Icon(Icons.add_circle_outline, color: Color(0xFF2563EB), size: 28), SizedBox(width: 12), Text('Plan New Trip Details', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Color(0xFF0F172A)))]),
                     IconButton(icon: const Icon(Icons.close_rounded, color: Color(0xFF64748B)), onPressed: widget.onCancel),
                   ],
                 ),
-                const SizedBox(height: 6),
-                const Text('Initiate a new travel itinerary by filling in your primary destination and travel dates.', style: TextStyle(fontSize: 14, color: Color(0xFF64748B))),
                 const SizedBox(height: 24),
 
-                const Text('Trip Name *', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF334155))),
-                const SizedBox(height: 6),
+                const Text('1. Basic Trip Details', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Color(0xFF2563EB))),
+                const SizedBox(height: 12),
                 TextFormField(controller: _titleController, decoration: _inputDecoration('e.g. Euro Summer Getaway', Icons.card_travel_outlined), validator: (v) => (v == null || v.trim().isEmpty) ? 'Required' : null),
                 const SizedBox(height: 16),
-
-                const Text('Primary Destination(s) *', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF334155))),
-                const SizedBox(height: 6),
                 TextFormField(controller: _destinationController, decoration: _inputDecoration('e.g. Paris & Rome', Icons.location_on_outlined), validator: (v) => (v == null || v.trim().isEmpty) ? 'Required' : null),
                 const SizedBox(height: 16),
+                Row(
+                  children: [
+                    Expanded(child: TextFormField(controller: _startDateController, decoration: _inputDecoration('Start Date', Icons.calendar_today))),
+                    const SizedBox(width: 16),
+                    Expanded(child: TextFormField(controller: _endDateController, decoration: _inputDecoration('End Date', Icons.event))),
+                  ],
+                ),
+                const SizedBox(height: 24),
 
+                const Text('2. Travel Style & Preferences', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Color(0xFF2563EB))),
+                const SizedBox(height: 12),
                 Row(
                   children: [
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text('Start Date *', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF334155))),
+                          const Text('Travel Style / Vibe', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF475569))),
                           const SizedBox(height: 6),
-                          TextFormField(controller: _startDateController, decoration: _inputDecoration('YYYY-MM-DD', Icons.calendar_today_outlined), validator: (v) => (v == null || v.trim().isEmpty) ? 'Required' : null),
+                          _buildDropdown(['Cultural Exploration 🏛️', 'Relaxing Beach Escape 🏖️', 'Food & Culinary Tour 🍣', 'High Adventure 🏔️', 'Wildlife Safari 🦁', 'Luxury Travel 👑'], _selectedTravelStyle, (v) => setState(() => _selectedTravelStyle = v!)),
                         ],
                       ),
                     ),
@@ -883,42 +631,76 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text('End Date *', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF334155))),
+                          const Text('Preferred Transport', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF475569))),
                           const SizedBox(height: 6),
-                          TextFormField(controller: _endDateController, decoration: _inputDecoration('YYYY-MM-DD', Icons.event_outlined), validator: (v) => (v == null || v.trim().isEmpty) ? 'Required' : null),
+                          _buildDropdown(['Flight ✈️', 'High-Speed Train 🚆', 'Rental Car 🚗', 'Cruise Ship 🚢', 'Bus 🚌'], _selectedTransportType, (v) => setState(() => _selectedTransportType = v!)),
                         ],
                       ),
                     ),
                   ],
                 ),
                 const SizedBox(height: 16),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text('Accommodation Type', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF475569))),
+                          const SizedBox(height: 6),
+                          _buildDropdown(['Boutique Hotel 🏨', 'Luxury Villa 🏝️', 'Alpine Chalet ❄️', 'Hostel 🎒', 'Apartment 🏙️'], _selectedAccommodation, (v) => setState(() => _selectedAccommodation = v!)),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text('Group Size', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF475569))),
+                          const SizedBox(height: 6),
+                          _buildDropdown(['Solo Traveler (1)', 'Couple (2)', 'Small Group (3-5)', 'Large Group / Family (6+)'], _selectedGroupSize, (v) => setState(() => _selectedGroupSize = v!)),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 24),
 
-                const Text('Estimated Total Budget (\$)', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF334155))),
-                const SizedBox(height: 6),
-                TextFormField(controller: _budgetController, keyboardType: TextInputType.number, decoration: _inputDecoration('2500.00', Icons.attach_money_outlined)),
+                const Text('3. Budget & Expense Allocation', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Color(0xFF2563EB))),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    Expanded(flex: 2, child: TextFormField(controller: _budgetController, keyboardType: TextInputType.number, decoration: _inputDecoration('Planned Budget', Icons.attach_money))),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      flex: 1,
+                      child: _buildDropdown(['USD (\$)', 'EUR (€)', 'GBP (£)', 'JPY (¥)'], _selectedCurrency, (v) => setState(() => _selectedCurrency = v!)),
+                    ),
+                  ],
+                ),
                 const SizedBox(height: 16),
-
-                const Text('Cover Image URL (Optional)', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF334155))),
-                const SizedBox(height: 6),
-                TextFormField(controller: _coverUrlController, decoration: _inputDecoration('https://images.unsplash.com/...', Icons.image_outlined)),
+                Row(
+                  children: [
+                    Expanded(child: TextFormField(controller: _transportController, keyboardType: TextInputType.number, decoration: _inputDecoration('Transport Cost', Icons.directions_bus))),
+                    const SizedBox(width: 12),
+                    Expanded(child: TextFormField(controller: _hotelController, keyboardType: TextInputType.number, decoration: _inputDecoration('Hotel / Stay Cost', Icons.hotel))),
+                    const SizedBox(width: 12),
+                    Expanded(child: TextFormField(controller: _mealController, keyboardType: TextInputType.number, decoration: _inputDecoration('Meal Cost', Icons.restaurant))),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                TextFormField(controller: _descriptionController, maxLines: 2, decoration: _inputDecoration('Trip Description & Notes (e.g. Dietary preferences, flight numbers)', Icons.notes)),
                 const SizedBox(height: 16),
+                TextFormField(controller: _coverUrlController, decoration: _inputDecoration('Cover Photo Image URL (Optional)', Icons.image)),
 
-                const Text('Trip Description & Notes (Optional)', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF334155))),
-                const SizedBox(height: 6),
-                TextFormField(controller: _descriptionController, maxLines: 3, decoration: _inputDecoration('Describe your trip goals...', Icons.notes_outlined)),
                 const SizedBox(height: 28),
-
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     OutlinedButton(onPressed: widget.onCancel, child: const Text('Cancel')),
                     const SizedBox(width: 12),
-                    ElevatedButton.icon(
-                      onPressed: isSubmitting ? null : _submit,
-                      icon: isSubmitting ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2)) : const Icon(Icons.check_rounded, size: 18),
-                      label: const Text('Save & Continue', style: TextStyle(fontWeight: FontWeight.w600)),
-                      style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF2563EB), foregroundColor: Colors.white, padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14)),
-                    ),
+                    ElevatedButton(onPressed: isSubmitting ? null : _submit, style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF2563EB), foregroundColor: Colors.white, padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14)), child: const Text('Save & Plan Itinerary')),
                   ],
                 ),
               ],
@@ -929,16 +711,29 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
     );
   }
 
+  Widget _buildDropdown(List<String> items, String currentVal, ValueChanged<String?> onChanged) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14),
+      decoration: BoxDecoration(color: const Color(0xFFF8FAFC), borderRadius: BorderRadius.circular(10), border: Border.all(color: const Color(0xFFE2E8F0))),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton<String>(
+          isExpanded: true,
+          value: currentVal,
+          items: items.map((i) => DropdownMenuItem(value: i, child: Text(i, style: const TextStyle(fontSize: 13)))).toList(),
+          onChanged: onChanged,
+        ),
+      ),
+    );
+  }
+
   InputDecoration _inputDecoration(String hint, IconData icon) {
     return InputDecoration(
       hintText: hint,
-      prefixIcon: Icon(icon, color: const Color(0xFF94A3B8), size: 20),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+      prefixIcon: Icon(icon, color: const Color(0xFF94A3B8), size: 18),
       filled: true,
       fillColor: const Color(0xFFF8FAFC),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: Color(0xFFE2E8F0))),
-      enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: Color(0xFFE2E8F0))),
-      focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: Color(0xFF2563EB), width: 1.5)),
     );
   }
 }
@@ -960,9 +755,7 @@ class MyTripsScreen extends StatefulWidget {
 
 class _MyTripsScreenState extends State<MyTripsScreen> {
   bool isLoading = true;
-  String? error;
   List<dynamic> trips = [];
-  String searchQuery = '';
 
   @override
   void initState() {
@@ -971,56 +764,94 @@ class _MyTripsScreenState extends State<MyTripsScreen> {
   }
 
   Future<void> _loadTrips() async {
-    setState(() {
-      isLoading = true;
-      error = null;
-    });
-
-    try {
-      final res = await ApiService.fetchTrips(widget.user['id']);
-      if (res['success'] == true) {
-        setState(() => trips = res['trips']);
-      } else {
-        setState(() => error = res['message'] ?? 'Failed to load trips.');
-      }
-    } catch (e) {
-      setState(() => error = 'Unable to connect to backend server.');
-    } finally {
-      if (mounted) setState(() => isLoading = false);
-    }
+    setState(() => isLoading = true);
+    final res = await ApiService.fetchTrips(widget.user['id']);
+    if (res['success'] == true) setState(() => trips = res['trips']);
+    setState(() => isLoading = false);
   }
 
-  Future<void> _deleteTrip(int tripId) async {
-    final confirm = await showDialog<bool>(
+  void _showShareDialog(Map<String, dynamic> trip) {
+    final String shareUrl = 'http://localhost:8090/#/share?token=${trip['share_token'] ?? 'share_demo'}';
+
+    showDialog(
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: Colors.white,
-        title: const Text('Delete Trip'),
-        content: const Text('Are you sure you want to delete this trip?'),
+        title: Row(
+          children: [
+            const Icon(Icons.share, color: Color(0xFF2563EB)),
+            const SizedBox(width: 10),
+            Expanded(child: Text('Share Trip: ${trip['title']}', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold))),
+          ],
+        ),
+        content: SizedBox(
+          width: 440,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text('Share this public itinerary link with friends or allow another user to copy it:', style: TextStyle(fontSize: 13, color: Color(0xFF64748B))),
+              const SizedBox(height: 12),
+              TextField(
+                controller: TextEditingController(text: shareUrl),
+                readOnly: true,
+                decoration: InputDecoration(
+                  suffixIcon: IconButton(
+                    icon: const Icon(Icons.copy, color: Color(0xFF2563EB)),
+                    onPressed: () {
+                      Clipboard.setData(ClipboardData(text: shareUrl));
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Public trip link copied to clipboard!')));
+                    },
+                  ),
+                  filled: true,
+                  fillColor: const Color(0xFFF8FAFC),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: Color(0xFFE2E8F0))),
+                ),
+              ),
+              const SizedBox(height: 20),
+              const Text('Share on Social Media:', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  ElevatedButton.icon(
+                    onPressed: () => ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('WhatsApp share link generated!'))),
+                    icon: const Icon(Icons.chat, size: 16),
+                    label: const Text('WhatsApp'),
+                    style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF25D366), foregroundColor: Colors.white),
+                  ),
+                  ElevatedButton.icon(
+                    onPressed: () => ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Twitter/X share link generated!'))),
+                    icon: const Icon(Icons.send, size: 16),
+                    label: const Text('Twitter / X'),
+                    style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF000000), foregroundColor: Colors.white),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
-          ElevatedButton(onPressed: () => Navigator.pop(context, true), style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFDC2626), foregroundColor: Colors.white), child: const Text('Delete')),
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Close')),
         ],
       ),
     );
+  }
 
-    if (confirm == true) {
-      final res = await ApiService.deleteTrip(tripId);
-      if (res['success'] == true) _loadTrips();
+  Future<void> _copyTripToAccount(Map<String, dynamic> trip) async {
+    final res = await ApiService.copyTrip(trip['id'], widget.user['id']);
+    if (res['success'] == true) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(res['message'] ?? 'Trip copied!')));
+        _loadTrips();
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final filteredTrips = trips.where((t) {
-      final title = (t['title'] ?? '').toString().toLowerCase();
-      final dest = (t['destination'] ?? '').toString().toLowerCase();
-      final q = searchQuery.toLowerCase();
-      return title.contains(q) || dest.contains(q);
-    }).toList();
-
     return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 28.0),
+      padding: const EdgeInsets.all(32.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -1032,112 +863,64 @@ class _MyTripsScreenState extends State<MyTripsScreen> {
                 children: [
                   Text('My Travel Itineraries', style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
                   SizedBox(height: 4),
-                  Text('Access, build, and review all your planned multi-city journeys.', style: TextStyle(fontSize: 14, color: Color(0xFF64748B))),
+                  Text('Manage, share, build, customize stops, and copy multi-city trip plans.', style: TextStyle(fontSize: 14, color: Color(0xFF64748B))),
                 ],
               ),
-              ElevatedButton.icon(
-                onPressed: widget.onCreateNewTrip,
-                icon: const Icon(Icons.add_rounded, size: 20),
-                label: const Text('Plan New Trip', style: TextStyle(fontWeight: FontWeight.w600)),
-                style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF2563EB), foregroundColor: Colors.white, padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16)),
-              ),
+              ElevatedButton.icon(onPressed: widget.onCreateNewTrip, icon: const Icon(Icons.add), label: const Text('Plan New Trip'), style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF2563EB), foregroundColor: Colors.white)),
             ],
           ),
           const SizedBox(height: 24),
-
-          TextField(
-            onChanged: (v) => setState(() => searchQuery = v),
-            decoration: InputDecoration(
-              hintText: 'Search trips by title or destination...',
-              prefixIcon: const Icon(Icons.search, color: Color(0xFF94A3B8)),
-              filled: true,
-              fillColor: Colors.white,
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFFE2E8F0))),
-              enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFFE2E8F0))),
-            ),
-          ),
-          const SizedBox(height: 24),
-
-          if (isLoading)
-            const Center(child: Padding(padding: EdgeInsets.all(40), child: CircularProgressIndicator(color: Color(0xFF2563EB))))
-          else if (filteredTrips.isEmpty)
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(48),
-              decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(14), border: Border.all(color: const Color(0xFFE2E8F0))),
-              child: const Column(
-                children: [
-                  Icon(Icons.flight_takeoff, size: 48, color: Color(0xFFCBD5E1)),
-                  SizedBox(height: 16),
-                  Text('No trips found', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                ],
-              ),
-            )
-          else
-            LayoutBuilder(
-              builder: (context, constraints) {
-                final double cardWidth = (constraints.maxWidth - 24) / 2;
-                return Wrap(
-                  spacing: 24,
-                  runSpacing: 24,
-                  children: filteredTrips.map((t) => _buildTripCard(cardWidth, Map<String, dynamic>.from(t))).toList(),
-                );
-              },
-            ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTripCard(double width, Map<String, dynamic> trip) {
-    final String coverUrl = (trip['cover_image_url'] != null && trip['cover_image_url'].toString().isNotEmpty)
-        ? trip['cover_image_url']
-        : 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=600&q=80';
-
-    return Container(
-      width: width < 380 ? double.infinity : width,
-      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(14), border: Border.all(color: const Color(0xFFE2E8F0))),
-      clipBehavior: Clip.antiAlias,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Stack(
-            children: [
-              Image.network(coverUrl, height: 140, width: double.infinity, fit: BoxFit.cover, errorBuilder: (context, error, stackTrace) => Container(height: 140, color: const Color(0xFFE2E8F0), child: const Icon(Icons.image_not_supported))),
-              Positioned(top: 12, right: 12, child: Container(padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4), decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(20)), child: Text(trip['status'] ?? 'Planned', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF2563EB))))),
-            ],
-          ),
-          Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(trip['title'] ?? '', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
-                const SizedBox(height: 6),
-                Row(children: [const Icon(Icons.location_on_outlined, size: 16, color: Color(0xFF2563EB)), const SizedBox(width: 4), Text(trip['destination'] ?? '', style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600))]),
-                const SizedBox(height: 4),
-                Row(children: [const Icon(Icons.calendar_today_outlined, size: 14, color: Color(0xFF64748B)), const SizedBox(width: 4), Text('${trip['start_date']} — ${trip['end_date']}', style: const TextStyle(fontSize: 12, color: Color(0xFF64748B)))]),
-                const SizedBox(height: 14),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text('\$${(trip['budget'] as num).toStringAsFixed(2)}', style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
-                    Text('${trip['stop_count'] ?? 0} Cities', style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Color(0xFF059669))),
-                  ],
+          isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : LayoutBuilder(
+                  builder: (context, constraints) {
+                    final double cardWidth = (constraints.maxWidth - 24) / 2;
+                    return Wrap(
+                      spacing: 24,
+                      runSpacing: 24,
+                      children: trips.map((t) {
+                        final trip = Map<String, dynamic>.from(t);
+                        return Container(
+                          width: cardWidth < 380 ? double.infinity : cardWidth,
+                          decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(14), border: Border.all(color: const Color(0xFFE2E8F0))),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Image.network(trip['cover_image_url'] ?? '', height: 130, width: double.infinity, fit: BoxFit.cover, errorBuilder: (context, error, stackTrace) => Container(height: 130, color: const Color(0xFFE2E8F0), child: const Icon(Icons.image))),
+                              Padding(
+                                padding: const EdgeInsets.all(18.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(trip['title'] ?? '', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
+                                    const SizedBox(height: 4),
+                                    Text('${trip['destination']} (${trip['start_date']} — ${trip['end_date']})', style: const TextStyle(fontSize: 13, color: Color(0xFF64748B))),
+                                    const SizedBox(height: 14),
+                                    Row(
+                                      children: [
+                                        Expanded(child: OutlinedButton.icon(onPressed: () => widget.onBuildItinerary(trip), icon: const Icon(Icons.tune_outlined, size: 14), label: const Text('Customize'))),
+                                        const SizedBox(width: 6),
+                                        Expanded(child: ElevatedButton.icon(onPressed: () => widget.onViewItinerary(trip), icon: const Icon(Icons.visibility, size: 14), label: const Text('View Plan'), style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF0F172A), foregroundColor: Colors.white))),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Row(
+                                      children: [
+                                        Expanded(child: OutlinedButton.icon(onPressed: () => _showShareDialog(trip), icon: const Icon(Icons.share, size: 14), label: const Text('Share'))),
+                                        const SizedBox(width: 6),
+                                        Expanded(child: OutlinedButton.icon(onPressed: () => _copyTripToAccount(trip), icon: const Icon(Icons.copy, size: 14), label: const Text('Copy Trip'))),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }).toList(),
+                    );
+                  },
                 ),
-                const SizedBox(height: 18),
-                Row(
-                  children: [
-                    Expanded(child: OutlinedButton(onPressed: () => widget.onBuildItinerary(trip), child: const Text('Build Itinerary'))),
-                    const SizedBox(width: 8),
-                    Expanded(child: ElevatedButton(onPressed: () => widget.onViewItinerary(trip), style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF0F172A), foregroundColor: Colors.white), child: const Text('View Plan'))),
-                    IconButton(icon: const Icon(Icons.delete_outline, color: Color(0xFFDC2626)), onPressed: () => _deleteTrip(trip['id'])),
-                  ],
-                ),
-              ],
-            ),
-          ),
         ],
       ),
     );
@@ -1145,7 +928,7 @@ class _MyTripsScreenState extends State<MyTripsScreen> {
 }
 
 // ==========================================
-// 5. ITINERARY BUILDER & VIEW SCREENS
+// 5. ITINERARY BUILDER & CUSTOMIZE STOPS
 // ==========================================
 class ItineraryBuilderScreen extends StatefulWidget {
   final Map<String, dynamic> trip;
@@ -1160,6 +943,7 @@ class ItineraryBuilderScreen extends StatefulWidget {
 class _ItineraryBuilderScreenState extends State<ItineraryBuilderScreen> {
   bool isLoading = true;
   Map<String, dynamic>? itineraryData;
+  Set<int> excludedStopIds = {};
 
   @override
   void initState() {
@@ -1174,50 +958,41 @@ class _ItineraryBuilderScreenState extends State<ItineraryBuilderScreen> {
     setState(() => isLoading = false);
   }
 
-  void _showAddStopDialog() {
-    final cityController = TextEditingController();
-    final countryController = TextEditingController();
-    final startDateController = TextEditingController(text: widget.trip['start_date'] ?? '2026-09-10');
-    final endDateController = TextEditingController(text: widget.trip['end_date'] ?? '2026-09-15');
-
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Add Travel Stop (City)'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(controller: cityController, decoration: const InputDecoration(labelText: 'City Name')),
-            TextField(controller: countryController, decoration: const InputDecoration(labelText: 'Country')),
-            TextField(controller: startDateController, decoration: const InputDecoration(labelText: 'Start Date')),
-            TextField(controller: endDateController, decoration: const InputDecoration(labelText: 'End Date')),
-          ],
-        ),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
-          ElevatedButton(
-            onPressed: () async {
-              if (cityController.text.isEmpty) return;
-              await ApiService.addTripStop(
-                tripId: widget.trip['id'],
-                cityName: cityController.text.trim(),
-                country: countryController.text.trim(),
-                startDate: startDateController.text.trim(),
-                endDate: endDateController.text.trim(),
-              );
-              if (context.mounted) Navigator.pop(context);
-              _load();
-            },
-            child: const Text('Add Stop'),
-          ),
-        ],
-      ),
-    );
+  void _toggleStopInclusion(int stopId) {
+    setState(() {
+      if (excludedStopIds.contains(stopId)) {
+        excludedStopIds.remove(stopId);
+      } else {
+        excludedStopIds.add(stopId);
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    final stops = itineraryData?['stops'] ?? [];
+    final Map<String, dynamic>? trip = itineraryData?['trip'];
+    final List<dynamic> stops = itineraryData?['stops'] ?? [];
+
+    double includedActivitiesCost = 0.0;
+    for (var stop in stops) {
+      final int stopId = (stop['id'] as num).toInt();
+      if (!excludedStopIds.contains(stopId)) {
+        final List<dynamic> activities = stop['activities'] ?? [];
+        for (var a in activities) {
+          includedActivitiesCost += (a['cost'] as num).toDouble();
+        }
+      }
+    }
+
+    final double plannedBudget = (trip?['budget'] as num?)?.toDouble() ?? 2500.0;
+    final double transportCost = (trip?['transport_cost'] as num?)?.toDouble() ?? 650.0;
+    final double hotelCost = (trip?['hotel_cost'] as num?)?.toDouble() ?? 1100.0;
+    final double mealCost = (trip?['meal_cost'] as num?)?.toDouble() ?? 550.0;
+
+    final double totalEstimatedCost = transportCost + hotelCost + mealCost + includedActivitiesCost;
+    final bool isOverBudget = totalEstimatedCost > plannedBudget;
+    final double costPerDay = totalEstimatedCost / 10.0;
+
     return SingleChildScrollView(
       padding: const EdgeInsets.all(32.0),
       child: Column(
@@ -1226,12 +1001,92 @@ class _ItineraryBuilderScreenState extends State<ItineraryBuilderScreen> {
           Row(
             children: [
               IconButton(icon: const Icon(Icons.arrow_back), onPressed: widget.onBack),
-              Text('Itinerary Builder: ${widget.trip['title']}', style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
-              const Spacer(),
-              ElevatedButton.icon(onPressed: _showAddStopDialog, icon: const Icon(Icons.add), label: const Text('Add City Stop')),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Customize Itinerary: ${widget.trip['title']}', style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
+                    const Text('Select which city stops to include or exclude to customize your budget & timeline.', style: TextStyle(fontSize: 13, color: Color(0xFF64748B))),
+                  ],
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 20),
+
+          if (isOverBudget) ...[
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(color: const Color(0xFFFEF2F2), borderRadius: BorderRadius.circular(12), border: Border.all(color: const Color(0xFFFCA5A5))),
+              child: Row(
+                children: [
+                  const Icon(Icons.warning_amber_rounded, color: Color(0xFFDC2626), size: 24),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text('Over-Budget Alert!', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Color(0xFF991B1B))),
+                        Text('Total estimated expenses (\$${totalEstimatedCost.toStringAsFixed(2)}) exceed your planned budget (\$${plannedBudget.toStringAsFixed(2)}) by \$${(totalEstimatedCost - plannedBudget).toStringAsFixed(2)}. Try excluding optional city stops below to stay under budget.', style: const TextStyle(fontSize: 13, color: Color(0xFF991B1B))),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 20),
+          ],
+
+          Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(14), border: Border.all(color: const Color(0xFFE2E8F0))),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text('Customized Budget & Expense Breakdown', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      decoration: BoxDecoration(color: const Color(0xFFEFF6FF), borderRadius: BorderRadius.circular(20)),
+                      child: Text('Cost per day: \$${costPerDay.toStringAsFixed(2)}/day', style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF2563EB), fontSize: 13)),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                _buildExpenseBar('Transport Expenses', transportCost, totalEstimatedCost, const Color(0xFF2563EB)),
+                const SizedBox(height: 12),
+                _buildExpenseBar('Hotel / Accommodation', hotelCost, totalEstimatedCost, const Color(0xFF059669)),
+                const SizedBox(height: 12),
+                _buildExpenseBar('Included Activities & Excursions', includedActivitiesCost, totalEstimatedCost, const Color(0xFFD97706)),
+                const SizedBox(height: 12),
+                _buildExpenseBar('Meals & Dining', mealCost, totalEstimatedCost, const Color(0xFF7C3AED)),
+                const SizedBox(height: 18),
+
+                const Divider(color: Color(0xFFF1F5F9)),
+                const SizedBox(height: 10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('Total Estimated Cost: \$${totalEstimatedCost.toStringAsFixed(2)}', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: isOverBudget ? const Color(0xFFDC2626) : const Color(0xFF0F172A))),
+                    Text('Planned Budget: \$${plannedBudget.toStringAsFixed(2)}', style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: Color(0xFF64748B))),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 28),
+
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text('Customize City Stops (Include / Exclude)', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
+              Text('${stops.length - excludedStopIds.length} of ${stops.length} Stops Included', style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF2563EB))),
+            ],
+          ),
+          const SizedBox(height: 16),
           isLoading
               ? const Center(child: CircularProgressIndicator())
               : ListView.separated(
@@ -1241,23 +1096,59 @@ class _ItineraryBuilderScreenState extends State<ItineraryBuilderScreen> {
                   separatorBuilder: (context, index) => const SizedBox(height: 16),
                   itemBuilder: (context, index) {
                     final stop = stops[index];
-                    return Card(
-                      color: Colors.white,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12), side: const BorderSide(color: Color(0xFFE2E8F0))),
-                      child: Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                    final int stopId = (stop['id'] as num).toInt();
+                    final bool isExcluded = excludedStopIds.contains(stopId);
+
+                    return Opacity(
+                      opacity: isExcluded ? 0.5 : 1.0,
+                      child: ExpansionTile(
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12), side: BorderSide(color: isExcluded ? const Color(0xFFCBD5E1) : const Color(0xFF2563EB), width: isExcluded ? 1 : 1.5)),
+                        collapsedShape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12), side: BorderSide(color: isExcluded ? const Color(0xFFCBD5E1) : const Color(0xFFE2E8F0))),
+                        backgroundColor: Colors.white,
+                        collapsedBackgroundColor: Colors.white,
+                        initiallyExpanded: true,
+                        leading: Switch(
+                          value: !isExcluded,
+                          activeTrackColor: const Color(0xFF2563EB),
+                          onChanged: (val) => _toggleStopInclusion(stopId),
+                        ),
+                        title: Row(
                           children: [
-                            Text('Stop ${index + 1}: ${stop['city_name']}, ${stop['country']}', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                            const SizedBox(height: 8),
-                            ...(stop['activities'] as List? ?? []).map((act) => ListTile(
-                                  title: Text(act['title'] ?? ''),
-                                  subtitle: Text('${act['time_slot']} • ${act['category']}'),
-                                  trailing: Text('\$${act['cost']}'),
-                                )),
+                            Text('Stop ${index + 1}: ${stop['city_name']}, ${stop['country']}', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17, color: isExcluded ? const Color(0xFF64748B) : const Color(0xFF0F172A), decoration: isExcluded ? TextDecoration.lineThrough : null)),
+                            const SizedBox(width: 10),
+                            if (isExcluded)
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                decoration: BoxDecoration(color: const Color(0xFFF1F5F9), borderRadius: BorderRadius.circular(4)),
+                                child: const Text('EXCLUDED FROM PLAN', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Color(0xFF64748B))),
+                              ),
                           ],
                         ),
+                        subtitle: Text('Dates: ${stop['start_date']} — ${stop['end_date']}', style: const TextStyle(fontSize: 12, color: Color(0xFF64748B))),
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Column(
+                              children: (stop['activities'] as List? ?? []).map<Widget>((act) {
+                                return Container(
+                                  margin: const EdgeInsets.only(bottom: 8),
+                                  padding: const EdgeInsets.all(12),
+                                  decoration: BoxDecoration(color: const Color(0xFFF8FAFC), borderRadius: BorderRadius.circular(8), border: Border.all(color: const Color(0xFFE2E8F0))),
+                                  child: Row(
+                                    children: [
+                                      const Icon(Icons.schedule, size: 16, color: Color(0xFF64748B)),
+                                      const SizedBox(width: 8),
+                                      Text(act['time_slot'] ?? '', style: const TextStyle(fontWeight: FontWeight.bold)),
+                                      const SizedBox(width: 14),
+                                      Expanded(child: Text(act['title'] ?? '', style: const TextStyle(fontWeight: FontWeight.w600))),
+                                      Text('\$${(act['cost'] as num).toStringAsFixed(2)}', style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF2563EB))),
+                                    ],
+                                  ),
+                                );
+                              }).toList(),
+                            ),
+                          ),
+                        ],
                       ),
                     );
                   },
@@ -1266,33 +1157,622 @@ class _ItineraryBuilderScreenState extends State<ItineraryBuilderScreen> {
       ),
     );
   }
+
+  Widget _buildExpenseBar(String label, double amount, double total, Color color) {
+    final double pct = total > 0 ? (amount / total).clamp(0.0, 1.0) : 0.0;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(label, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF334155))),
+            Text('\$${amount.toStringAsFixed(2)} (${(pct * 100).toStringAsFixed(0)}%)', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: color)),
+          ],
+        ),
+        const SizedBox(height: 6),
+        LinearProgressIndicator(
+          value: pct,
+          backgroundColor: const Color(0xFFF1F5F9),
+          color: color,
+          minHeight: 8,
+          borderRadius: BorderRadius.circular(4),
+        ),
+      ],
+    );
+  }
 }
 
-class ItineraryViewScreen extends StatelessWidget {
+// ==========================================
+// 6. ITINERARY VIEW SCREEN (With Direct Review Button & Full Trip Activities)
+// ==========================================
+class ItineraryViewScreen extends StatefulWidget {
   final Map<String, dynamic> trip;
   final VoidCallback onBack;
 
   const ItineraryViewScreen({super.key, required this.trip, required this.onBack});
 
   @override
+  State<ItineraryViewScreen> createState() => _ItineraryViewScreenState();
+}
+
+class _ItineraryViewScreenState extends State<ItineraryViewScreen> {
+  bool isLoading = true;
+  String? error;
+  Map<String, dynamic>? itineraryData;
+  int selectedViewTab = 0; // 0: Day-wise Timeline, 1: City-Grouped View
+  Set<int> excludedStopIds = {};
+
+  @override
+  void initState() {
+    super.initState();
+    _loadItinerary();
+  }
+
+  Future<void> _loadItinerary() async {
+    setState(() {
+      isLoading = true;
+      error = null;
+    });
+
+    try {
+      final res = await ApiService.fetchItinerary(widget.trip['id']);
+      if (res['success'] == true) {
+        setState(() => itineraryData = res);
+      } else {
+        setState(() => error = res['message'] ?? 'Failed to load itinerary.');
+      }
+    } catch (e) {
+      setState(() => error = 'Unable to connect to server.');
+    } finally {
+      if (mounted) setState(() => isLoading = false);
+    }
+  }
+
+  void _toggleStopInclusion(int stopId) {
+    setState(() {
+      if (excludedStopIds.contains(stopId)) {
+        excludedStopIds.remove(stopId);
+      } else {
+        excludedStopIds.add(stopId);
+      }
+    });
+  }
+
+  void _showReviewDialog(String destinationName) {
+    int selectedRating = 5;
+    final titleController = TextEditingController(text: 'Amazing Experience in $destinationName!');
+    final commentController = TextEditingController();
+    bool isSubmitting = false;
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            return AlertDialog(
+              backgroundColor: Colors.white,
+              title: Row(
+                children: [
+                  const Icon(Icons.star_rounded, color: Color(0xFFD97706)),
+                  const SizedBox(width: 8),
+                  Expanded(child: Text('Review & Rate: $destinationName', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold))),
+                ],
+              ),
+              content: SizedBox(
+                width: 440,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('Rating:', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 6),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: List.generate(5, (index) {
+                        final star = index + 1;
+                        return IconButton(
+                          icon: Icon(star <= selectedRating ? Icons.star_rounded : Icons.star_border_rounded, color: const Color(0xFFD97706), size: 30),
+                          onPressed: () => setModalState(() => selectedRating = star),
+                        );
+                      }),
+                    ),
+                    const SizedBox(height: 14),
+                    const Text('Review Headline:', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 6),
+                    TextField(
+                      controller: titleController,
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: const Color(0xFFF8FAFC),
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                      ),
+                    ),
+                    const SizedBox(height: 14),
+                    const Text('Feedback & Comments:', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 6),
+                    TextField(
+                      controller: commentController,
+                      maxLines: 3,
+                      decoration: InputDecoration(
+                        hintText: 'Describe what you loved about this itinerary and destination...',
+                        filled: true,
+                        fillColor: const Color(0xFFF8FAFC),
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              actions: [
+                OutlinedButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+                ElevatedButton(
+                  onPressed: isSubmitting
+                      ? null
+                      : () async {
+                          if (titleController.text.trim().isEmpty || commentController.text.trim().isEmpty) {
+                            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please fill out review title and comment.')));
+                            return;
+                          }
+                          setModalState(() => isSubmitting = true);
+                          final navigator = Navigator.of(context);
+                          final messenger = ScaffoldMessenger.of(context);
+                          final res = await ApiService.addReview(
+                            userId: widget.trip['user_id'] ?? 1,
+                            destinationName: destinationName,
+                            rating: selectedRating,
+                            title: titleController.text.trim(),
+                            comment: commentController.text.trim(),
+                          );
+                          navigator.pop();
+                          if (res['success'] == true) {
+                            messenger.showSnackBar(const SnackBar(content: Text('Review & feedback saved!')));
+                          }
+                        },
+                  style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF2563EB), foregroundColor: Colors.white),
+                  child: isSubmitting ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2)) : const Text('Submit Review'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final Map<String, dynamic> trip = itineraryData?['trip'] ?? widget.trip;
+    final List<dynamic> stops = itineraryData?['stops'] ?? [];
+
+    double includedActivitiesCost = 0.0;
+    for (var stop in stops) {
+      final int stopId = (stop['id'] as num).toInt();
+      if (!excludedStopIds.contains(stopId)) {
+        final List<dynamic> activities = stop['activities'] ?? [];
+        for (var a in activities) {
+          includedActivitiesCost += (a['cost'] as num).toDouble();
+        }
+      }
+    }
+
+    final double plannedBudget = (trip['budget'] as num?)?.toDouble() ?? 2500.0;
+    final double transportCost = (trip['transport_cost'] as num?)?.toDouble() ?? 650.0;
+    final double hotelCost = (trip['hotel_cost'] as num?)?.toDouble() ?? 1100.0;
+    final double mealCost = (trip['meal_cost'] as num?)?.toDouble() ?? 550.0;
+    final double totalEstimatedCost = transportCost + hotelCost + mealCost + includedActivitiesCost;
+    final double dailyCost = totalEstimatedCost / 10.0;
+
+    final String coverUrl = (trip['cover_image_url'] != null && trip['cover_image_url'].toString().isNotEmpty)
+        ? trip['cover_image_url']
+        : 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=600&q=80';
+
     return SingleChildScrollView(
       padding: const EdgeInsets.all(32.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(children: [
-            IconButton(icon: const Icon(Icons.arrow_back), onPressed: onBack),
-            Text('Itinerary Timeline: ${trip['title']}', style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
-          ]),
-          const SizedBox(height: 20),
-          Container(
-            padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12), border: Border.all(color: const Color(0xFFE2E8F0))),
-            child: Text('Viewing day-wise and city-grouped itinerary for ${trip['destination']}.'),
+          Row(
+            children: [
+              IconButton(icon: const Icon(Icons.arrow_back), onPressed: widget.onBack),
+              const SizedBox(width: 8),
+              const Text('Visual Itinerary & Plan', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
+              const Spacer(),
+              ElevatedButton.icon(
+                onPressed: () => _showReviewDialog(trip['destination'] ?? 'Paris & Rome'),
+                icon: const Icon(Icons.star_rate_rounded, size: 18),
+                label: const Text('⭐ Review & Feedback'),
+                style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFD97706), foregroundColor: Colors.white),
+              ),
+              const SizedBox(width: 10),
+              OutlinedButton.icon(
+                onPressed: () {
+                  final String link = 'http://localhost:8090/#/share?token=${trip['share_token']}';
+                  Clipboard.setData(ClipboardData(text: link));
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Public share link copied to clipboard!')));
+                },
+                icon: const Icon(Icons.share, size: 16),
+                label: const Text('Share Plan'),
+              ),
+            ],
           ),
+          const SizedBox(height: 20),
+
+          // HERO TRIP BANNER CARD
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: const Color(0xFFE2E8F0)),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.03),
+                  blurRadius: 16,
+                  offset: const Offset(0, 6),
+                ),
+              ],
+            ),
+            clipBehavior: Clip.antiAlias,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Stack(
+                  children: [
+                    Image.network(
+                      coverUrl,
+                      height: 220,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) => Container(height: 220, color: const Color(0xFFE2E8F0), child: const Icon(Icons.image)),
+                    ),
+                    Container(
+                      height: 220,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [Colors.black.withValues(alpha: 0.1), Colors.black.withValues(alpha: 0.75)],
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      bottom: 20,
+                      left: 24,
+                      right: 24,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                decoration: BoxDecoration(color: const Color(0xFF2563EB), borderRadius: BorderRadius.circular(6)),
+                                child: Text(trip['status'] ?? 'Confirmed', style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
+                              ),
+                              const SizedBox(width: 8),
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(6)),
+                                child: Text(trip['travel_style'] ?? 'Cultural Exploration 🏛️', style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600)),
+                              ),
+                              const SizedBox(width: 8),
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(6)),
+                                child: Text(trip['transport_type'] ?? 'Flight ✈️', style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600)),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            trip['title'] ?? '',
+                            style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.white),
+                          ),
+                          const SizedBox(height: 4),
+                          Row(
+                            children: [
+                              const Icon(Icons.location_on, size: 16, color: Colors.white),
+                              const SizedBox(width: 4),
+                              Text(trip['destination'] ?? '', style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w500)),
+                              const SizedBox(width: 16),
+                              const Icon(Icons.calendar_today, size: 14, color: Colors.white),
+                              const SizedBox(width: 4),
+                              Text('${trip['start_date']} — ${trip['end_date']}', style: const TextStyle(color: Colors.white, fontSize: 14)),
+                              const SizedBox(width: 16),
+                              const Icon(Icons.people, size: 14, color: Colors.white),
+                              const SizedBox(width: 4),
+                              Text(trip['group_size'] ?? 'Couple (2)', style: const TextStyle(color: Colors.white, fontSize: 14)),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(24.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      _buildMetricSummary('Total Cost', '\$${totalEstimatedCost.toStringAsFixed(2)}', Icons.account_balance_wallet_outlined, const Color(0xFF2563EB)),
+                      _buildMetricSummary('Planned Budget', '\$${plannedBudget.toStringAsFixed(2)}', Icons.flag_outlined, const Color(0xFF059669)),
+                      _buildMetricSummary('Daily Average', '\$${dailyCost.toStringAsFixed(2)}/day', Icons.today, const Color(0xFFD97706)),
+                      _buildMetricSummary('Included Cities', '${stops.length - excludedStopIds.length} of ${stops.length} Cities', Icons.location_city, const Color(0xFF7C3AED)),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 28),
+
+          // TABBED VIEW SWITCHER & CUSTOMIZATION BAR
+          Row(
+            children: [
+              ChoiceChip(
+                label: const Text('📅 Day-Wise Calendar Timeline'),
+                selected: selectedViewTab == 0,
+                selectedColor: const Color(0xFF2563EB),
+                labelStyle: TextStyle(color: selectedViewTab == 0 ? Colors.white : const Color(0xFF334155), fontWeight: FontWeight.bold),
+                onSelected: (sel) {
+                  if (sel) setState(() => selectedViewTab = 0);
+                },
+              ),
+              const SizedBox(width: 12),
+              ChoiceChip(
+                label: const Text('🏙️ City-Grouped Itinerary'),
+                selected: selectedViewTab == 1,
+                selectedColor: const Color(0xFF2563EB),
+                labelStyle: TextStyle(color: selectedViewTab == 1 ? Colors.white : const Color(0xFF334155), fontWeight: FontWeight.bold),
+                onSelected: (sel) {
+                  if (sel) setState(() => selectedViewTab = 1);
+                },
+              ),
+              const Spacer(),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(color: const Color(0xFFEFF6FF), borderRadius: BorderRadius.circular(20)),
+                child: const Row(
+                  children: [
+                    Icon(Icons.tune_outlined, size: 16, color: Color(0xFF2563EB)),
+                    SizedBox(width: 6),
+                    Text('Toggle switches to include / exclude city stops', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF2563EB))),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 24),
+
+          if (isLoading)
+            const Center(child: Padding(padding: EdgeInsets.all(40), child: CircularProgressIndicator(color: Color(0xFF2563EB))))
+          else if (selectedViewTab == 0)
+            _buildDayWiseTimeline(stops)
+          else
+            _buildCityGroupedOverview(stops),
         ],
       ),
+    );
+  }
+
+  Widget _buildMetricSummary(String title, String value, IconData icon, Color color) {
+    return Row(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(color: color.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(10)),
+          child: Icon(icon, color: color, size: 20),
+        ),
+        const SizedBox(width: 12),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(title, style: const TextStyle(fontSize: 12, color: Color(0xFF64748B))),
+            const SizedBox(height: 2),
+            Text(value, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDayWiseTimeline(List<dynamic> stops) {
+    int dayCounter = 1;
+    final List<Widget> dayCards = [];
+
+    for (int i = 0; i < stops.length; i++) {
+      final stop = stops[i];
+      final int stopId = (stop['id'] as num).toInt();
+      final bool isExcluded = excludedStopIds.contains(stopId);
+      final List<dynamic> activities = stop['activities'] ?? [];
+
+      dayCards.add(
+        Opacity(
+          opacity: isExcluded ? 0.45 : 1.0,
+          child: Container(
+            margin: const EdgeInsets.only(bottom: 24),
+            decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(14), border: Border.all(color: isExcluded ? const Color(0xFFCBD5E1) : const Color(0xFFE2E8F0))),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(18),
+                  decoration: const BoxDecoration(
+                    color: Color(0xFFF8FAFC),
+                    borderRadius: BorderRadius.only(topLeft: Radius.circular(14), topRight: Radius.circular(14)),
+                    border: Border(bottom: BorderSide(color: Color(0xFFE2E8F0))),
+                  ),
+                  child: Row(
+                    children: [
+                      Switch(
+                        value: !isExcluded,
+                        activeTrackColor: const Color(0xFF2563EB),
+                        onChanged: (val) => _toggleStopInclusion(stopId),
+                      ),
+                      const SizedBox(width: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        decoration: BoxDecoration(color: isExcluded ? const Color(0xFF94A3B8) : const Color(0xFF2563EB), borderRadius: BorderRadius.circular(6)),
+                        child: Text('City Stop ${i + 1}', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12)),
+                      ),
+                      const SizedBox(width: 12),
+                      Text('${stop['city_name']}, ${stop['country']}', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: const Color(0xFF0F172A), decoration: isExcluded ? TextDecoration.lineThrough : null)),
+                      if (isExcluded) ...[
+                        const SizedBox(width: 10),
+                        const Text('(Excluded)', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFFDC2626))),
+                      ],
+                      const Spacer(),
+                      Text('Dates: ${stop['start_date']} — ${stop['end_date']}', style: const TextStyle(fontSize: 13, color: Color(0xFF64748B))),
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: activities.isEmpty
+                      ? const Text('No activities scheduled for this city stop.', style: TextStyle(color: Color(0xFF94A3B8)))
+                      : Column(
+                          children: activities.map<Widget>((act) {
+                            final currentDay = dayCounter++;
+                            return Container(
+                              margin: const EdgeInsets.only(bottom: 12),
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(color: const Color(0xFFF8FAFC), borderRadius: BorderRadius.circular(10), border: Border.all(color: const Color(0xFFE2E8F0))),
+                              child: Row(
+                                children: [
+                                  CircleAvatar(
+                                    radius: 16,
+                                    backgroundColor: const Color(0xFFEFF6FF),
+                                    child: Text('D$currentDay', style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Color(0xFF2563EB))),
+                                  ),
+                                  const SizedBox(width: 14),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                    decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(6), border: Border.all(color: const Color(0xFFCBD5E1))),
+                                    child: Row(
+                                      children: [
+                                        const Icon(Icons.schedule, size: 14, color: Color(0xFF64748B)),
+                                        const SizedBox(width: 4),
+                                        Text(act['time_slot'] ?? '', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(width: 14),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(act['title'] ?? '', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Color(0xFF0F172A))),
+                                        if (act['notes'] != null && act['notes'].toString().isNotEmpty)
+                                          Text(act['notes'], style: const TextStyle(fontSize: 12, color: Color(0xFF64748B))),
+                                      ],
+                                    ),
+                                  ),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                                    decoration: BoxDecoration(color: const Color(0xFFEFF6FF), borderRadius: BorderRadius.circular(6)),
+                                    child: Text(act['category'] ?? 'Sightseeing', style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Color(0xFF2563EB))),
+                                  ),
+                                  const SizedBox(width: 16),
+                                  Text('\$${(act['cost'] as num).toStringAsFixed(2)}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Color(0xFF0F172A))),
+                                ],
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
+    return Column(children: dayCards);
+  }
+
+  Widget _buildCityGroupedOverview(List<dynamic> stops) {
+    return Column(
+      children: stops.map((stop) {
+        final int stopId = (stop['id'] as num).toInt();
+        final bool isExcluded = excludedStopIds.contains(stopId);
+        final List<dynamic> activities = stop['activities'] ?? [];
+
+        double stopTotal = 0.0;
+        for (var a in activities) {
+          stopTotal += (a['cost'] as num).toDouble();
+        }
+
+        return Opacity(
+          opacity: isExcluded ? 0.45 : 1.0,
+          child: Container(
+            margin: const EdgeInsets.only(bottom: 24),
+            decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(14), border: Border.all(color: isExcluded ? const Color(0xFFCBD5E1) : const Color(0xFFE2E8F0))),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: const BoxDecoration(
+                    color: Color(0xFFF8FAFC),
+                    borderRadius: BorderRadius.only(topLeft: Radius.circular(14), topRight: Radius.circular(14)),
+                    border: Border(bottom: BorderSide(color: Color(0xFFE2E8F0))),
+                  ),
+                  child: Row(
+                    children: [
+                      Switch(
+                        value: !isExcluded,
+                        activeTrackColor: const Color(0xFF2563EB),
+                        onChanged: (val) => _toggleStopInclusion(stopId),
+                      ),
+                      const SizedBox(width: 8),
+                      const Icon(Icons.location_city, color: Color(0xFF2563EB), size: 22),
+                      const SizedBox(width: 12),
+                      Text('${stop['city_name']}, ${stop['country']}', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: const Color(0xFF0F172A), decoration: isExcluded ? TextDecoration.lineThrough : null)),
+                      const Spacer(),
+                      Text('Activities Total: \$${stopTotal.toStringAsFixed(2)}', style: TextStyle(fontWeight: FontWeight.bold, color: isExcluded ? const Color(0xFF94A3B8) : const Color(0xFF059669), fontSize: 14)),
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (stop['notes'] != null && stop['notes'].toString().isNotEmpty) ...[
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(color: const Color(0xFFFEF3C7), borderRadius: BorderRadius.circular(8)),
+                          child: Row(
+                            children: [
+                              const Icon(Icons.hotel_outlined, size: 16, color: Color(0xFFD97706)),
+                              const SizedBox(width: 8),
+                              Text('Accommodation / Notes: ${stop['notes']}', style: const TextStyle(fontSize: 12, color: Color(0xFF92400E))),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                      ],
+                      ...activities.map((act) {
+                        return ListTile(
+                          dense: true,
+                          leading: Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(color: const Color(0xFFF1F5F9), borderRadius: BorderRadius.circular(6)),
+                            child: const Icon(Icons.star_outline, size: 16, color: Color(0xFF2563EB)),
+                          ),
+                          title: Text(act['title'] ?? '', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                          subtitle: Text('${act['time_slot']} • ${act['category']}'),
+                          trailing: Text('\$${(act['cost'] as num).toStringAsFixed(2)}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Color(0xFF0F172A))),
+                        );
+                      }),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      }).toList(),
     );
   }
 }
@@ -1314,6 +1794,7 @@ class _CitySearchScreenState extends State<CitySearchScreen> {
   List<dynamic> cities = [];
   String query = '';
   String selectedRegion = 'All';
+  String selectedSort = 'popular';
 
   @override
   void initState() {
@@ -1323,7 +1804,7 @@ class _CitySearchScreenState extends State<CitySearchScreen> {
 
   Future<void> _fetchCities() async {
     setState(() => isLoading = true);
-    final res = await ApiService.searchCities(query: query, region: selectedRegion);
+    final res = await ApiService.searchCities(query: query, region: selectedRegion, sort: selectedSort);
     if (res['success'] == true) {
       setState(() => cities = res['cities']);
     }
@@ -1339,7 +1820,7 @@ class _CitySearchScreenState extends State<CitySearchScreen> {
         children: [
           const Text('Explore & Search Cities', style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
           const SizedBox(height: 4),
-          const Text('Discover global destinations, filter by region, view cost index & popularity ratings.', style: TextStyle(fontSize: 14, color: Color(0xFF64748B))),
+          const Text('Cities automatically alter rank based on maximum views and trip visits.', style: TextStyle(fontSize: 14, color: Color(0xFF64748B))),
           const SizedBox(height: 24),
 
           Row(
@@ -1357,7 +1838,6 @@ class _CitySearchScreenState extends State<CitySearchScreen> {
                     fillColor: Colors.white,
                     contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFFE2E8F0))),
-                    enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFFE2E8F0))),
                   ),
                 ),
               ),
@@ -1368,7 +1848,7 @@ class _CitySearchScreenState extends State<CitySearchScreen> {
                 child: DropdownButtonHideUnderline(
                   child: DropdownButton<String>(
                     value: selectedRegion,
-                    items: ['All', 'Europe', 'Asia', 'Americas'].map((r) => DropdownMenuItem(value: r, child: Text('Region: $r'))).toList(),
+                    items: ['All', 'Europe', 'Asia', 'Americas', 'Africa', 'Oceania', 'Middle East'].map((r) => DropdownMenuItem(value: r, child: Text('Region: $r'))).toList(),
                     onChanged: (v) {
                       if (v != null) {
                         setState(() => selectedRegion = v);
@@ -1384,8 +1864,6 @@ class _CitySearchScreenState extends State<CitySearchScreen> {
 
           if (isLoading)
             const Center(child: Padding(padding: EdgeInsets.all(40), child: CircularProgressIndicator(color: Color(0xFF2563EB))))
-          else if (cities.isEmpty)
-            const Center(child: Text('No cities match your search filter.', style: TextStyle(color: Color(0xFF94A3B8))))
           else
             LayoutBuilder(
               builder: (context, constraints) {
@@ -1410,13 +1888,7 @@ class _CitySearchScreenState extends State<CitySearchScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Image.network(
-            city['image_url'] ?? '',
-            height: 150,
-            width: double.infinity,
-            fit: BoxFit.cover,
-            errorBuilder: (context, error, stackTrace) => Container(height: 150, color: const Color(0xFFE2E8F0), child: const Icon(Icons.image)),
-          ),
+          Image.network(city['image_url'] ?? '', height: 150, width: double.infinity, fit: BoxFit.cover, errorBuilder: (context, error, stackTrace) => Container(height: 150, color: const Color(0xFFE2E8F0), child: const Icon(Icons.image))),
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
@@ -1426,17 +1898,11 @@ class _CitySearchScreenState extends State<CitySearchScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text('${city['name']}, ${city['country']}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Color(0xFF0F172A))),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                      decoration: BoxDecoration(color: const Color(0xFFFEF3C7), borderRadius: BorderRadius.circular(6)),
-                      child: Text('${city['popularity_score']} ★', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFFD97706))),
-                    ),
+                    Text('${city['popularity_score']} ★', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFFD97706))),
                   ],
                 ),
                 const SizedBox(height: 4),
-                Text('Cost Index: ${city['cost_index']} • Avg \$${(city['average_cost'] as num).toInt()}/trip', style: const TextStyle(fontSize: 12, color: Color(0xFF2563EB), fontWeight: FontWeight.w600)),
-                const SizedBox(height: 8),
-                Text(city['description'] ?? '', maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 12, color: Color(0xFF64748B))),
+                Text('👁️ ${city['view_count']} views • ✈️ ${city['visit_count']} visits', style: const TextStyle(fontSize: 11, color: Color(0xFF2563EB), fontWeight: FontWeight.w600)),
               ],
             ),
           ),
@@ -1487,107 +1953,39 @@ class _ActivitySearchScreenState extends State<ActivitySearchScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text('Search Things To Do & Activities', style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
-          const SizedBox(height: 4),
-          const Text('Enrich your trip itineraries with top sightseeing, culture, food tours, and adventures.', style: TextStyle(fontSize: 14, color: Color(0xFF64748B))),
           const SizedBox(height: 24),
-
           TextField(
             onChanged: (v) {
               query = v;
               _fetchActivities();
             },
             decoration: InputDecoration(
-              hintText: 'Search activities by title, keyword, or city...',
-              prefixIcon: const Icon(Icons.search, color: Color(0xFF94A3B8)),
+              hintText: 'Search activities...',
+              prefixIcon: const Icon(Icons.search),
               filled: true,
               fillColor: Colors.white,
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFFE2E8F0))),
-              enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFFE2E8F0))),
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
             ),
-          ),
-          const SizedBox(height: 16),
-          Wrap(
-            spacing: 8,
-            children: ['All', 'Sightseeing', 'Food & Drink', 'Adventure', 'Culture'].map((cat) {
-              final bool isSel = selectedCategory == cat;
-              return ChoiceChip(
-                label: Text(cat),
-                selected: isSel,
-                selectedColor: const Color(0xFF2563EB),
-                labelStyle: TextStyle(color: isSel ? Colors.white : const Color(0xFF334155), fontWeight: FontWeight.w600),
-                onSelected: (sel) {
-                  if (sel) {
-                    setState(() => selectedCategory = cat);
-                    _fetchActivities();
-                  }
-                },
-              );
-            }).toList(),
           ),
           const SizedBox(height: 28),
-
-          if (isLoading)
-            const Center(child: Padding(padding: EdgeInsets.all(40), child: CircularProgressIndicator(color: Color(0xFF2563EB))))
-          else if (activities.isEmpty)
-            const Center(child: Text('No activities found.', style: TextStyle(color: Color(0xFF94A3B8))))
-          else
-            LayoutBuilder(
-              builder: (context, constraints) {
-                final double width = (constraints.maxWidth - 24) / 2;
-                return Wrap(
-                  spacing: 24,
-                  runSpacing: 24,
-                  children: activities.map((a) => _buildActivityCard(width < 360 ? double.infinity : width, Map<String, dynamic>.from(a))).toList(),
-                );
-              },
-            ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildActivityCard(double width, Map<String, dynamic> act) {
-    return Container(
-      width: width,
-      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(14), border: Border.all(color: const Color(0xFFE2E8F0))),
-      clipBehavior: Clip.antiAlias,
-      child: Row(
-        children: [
-          Image.network(
-            act['image_url'] ?? '',
-            width: 140,
-            height: 120,
-            fit: BoxFit.cover,
-            errorBuilder: (context, error, stackTrace) => Container(width: 140, height: 120, color: const Color(0xFFE2E8F0), child: const Icon(Icons.image)),
-          ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                        decoration: BoxDecoration(color: const Color(0xFFEFF6FF), borderRadius: BorderRadius.circular(6)),
-                        child: Text(act['category'] ?? 'Sightseeing', style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Color(0xFF2563EB))),
+          isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : ListView.separated(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: activities.length,
+                  separatorBuilder: (context, index) => const SizedBox(height: 12),
+                  itemBuilder: (context, index) {
+                    final act = activities[index];
+                    return Card(
+                      color: Colors.white,
+                      child: ListTile(
+                        title: Text(act['title'] ?? ''),
+                        subtitle: Text('${act['category']} • \$${act['cost']}'),
                       ),
-                      Text('\$${(act['cost'] as num).toStringAsFixed(2)}', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
-                    ],
-                  ),
-                  const SizedBox(height: 6),
-                  Text(act['title'] ?? '', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Color(0xFF0F172A))),
-                  const SizedBox(height: 4),
-                  Text('Duration: ${act['duration']} • ${act['city_name'] ?? ''}', style: const TextStyle(fontSize: 12, color: Color(0xFF64748B))),
-                  const SizedBox(height: 4),
-                  Text(act['description'] ?? '', maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 12, color: Color(0xFF475569))),
-                ],
-              ),
-            ),
-          ),
+                    );
+                  },
+                ),
         ],
       ),
     );

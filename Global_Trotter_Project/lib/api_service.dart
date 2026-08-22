@@ -22,6 +22,77 @@ class ApiService {
     return jsonDecode(response.body);
   }
 
+  static Future<Map<String, dynamic>> fetchReviews() async {
+    final response = await http.get(Uri.parse('$baseUrl?action=reviews'));
+    return jsonDecode(response.body);
+  }
+
+  static Future<Map<String, dynamic>> addReview({
+    required int userId,
+    required String destinationName,
+    required int rating,
+    required String title,
+    required String comment,
+  }) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl?action=add_review'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'user_id': userId,
+        'destination_name': destinationName,
+        'rating': rating,
+        'title': title,
+        'comment': comment,
+      }),
+    );
+    return jsonDecode(response.body);
+  }
+
+  static Future<Map<String, dynamic>> updateProfile({
+    required int userId,
+    required String name,
+    required String email,
+    required String profilePhotoUrl,
+    required String languagePreference,
+  }) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl?action=update_profile'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'user_id': userId,
+        'name': name,
+        'email': email,
+        'profile_photo_url': profilePhotoUrl,
+        'language_preference': languagePreference,
+      }),
+    );
+    return jsonDecode(response.body);
+  }
+
+  static Future<Map<String, dynamic>> deleteAccount(int userId) async {
+    final response = await http.delete(Uri.parse('$baseUrl?action=delete_account&user_id=$userId'));
+    return jsonDecode(response.body);
+  }
+
+  static Future<Map<String, dynamic>> fetchSavedDestinations(int userId) async {
+    final response = await http.get(Uri.parse('$baseUrl?action=saved_destinations&user_id=$userId'));
+    return jsonDecode(response.body);
+  }
+
+  static Future<Map<String, dynamic>> toggleSavedDestination(int userId, int destinationId) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl?action=toggle_saved_destination'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'user_id': userId, 'destination_id': destinationId}),
+    );
+    return jsonDecode(response.body);
+  }
+
+  static Future<Map<String, dynamic>> fetchAdminAnalytics(int userId) async {
+    final response = await http.get(Uri.parse('$baseUrl?action=admin_analytics&user_id=$userId'));
+    return jsonDecode(response.body);
+  }
+
   static Future<Map<String, dynamic>> fetchDashboard(int userId) async {
     final response = await http.get(Uri.parse('$baseUrl?action=dashboard&user_id=$userId'));
     return jsonDecode(response.body);
@@ -39,6 +110,14 @@ class ApiService {
     required String startDate,
     required String endDate,
     required double budget,
+    double transportCost = 0.0,
+    double hotelCost = 0.0,
+    double mealCost = 0.0,
+    String travelStyle = 'Cultural Exploration 🏛️',
+    String transportType = 'Flight ✈️',
+    String accommodationType = 'Boutique Hotel 🏨',
+    String groupSize = 'Couple (2)',
+    String currency = 'USD (\$)',
     String description = '',
     String coverImageUrl = '',
   }) async {
@@ -52,6 +131,14 @@ class ApiService {
         'start_date': startDate,
         'end_date': endDate,
         'budget': budget,
+        'transport_cost': transportCost,
+        'hotel_cost': hotelCost,
+        'meal_cost': mealCost,
+        'travel_style': travelStyle,
+        'transport_type': transportType,
+        'accommodation_type': accommodationType,
+        'group_size': groupSize,
+        'currency': currency,
         'description': description,
         'cover_image_url': coverImageUrl,
       }),
@@ -125,14 +212,52 @@ class ApiService {
     return jsonDecode(response.body);
   }
 
-  // Feature 7: City Search API
-  static Future<Map<String, dynamic>> searchCities({String query = '', String region = 'All'}) async {
-    final Uri uri = Uri.parse('$baseUrl?action=cities&q=${Uri.encodeComponent(query)}&region=${Uri.encodeComponent(region)}');
+  static Future<Map<String, dynamic>> updateTripExpenses({
+    required int tripId,
+    required double transportCost,
+    required double hotelCost,
+    required double mealCost,
+  }) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl?action=update_trip_expenses'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'trip_id': tripId,
+        'transport_cost': transportCost,
+        'hotel_cost': hotelCost,
+        'meal_cost': mealCost,
+      }),
+    );
+    return jsonDecode(response.body);
+  }
+
+  static Future<Map<String, dynamic>> copyTrip(int tripId, int userId) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl?action=copy_trip'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'trip_id': tripId,
+        'user_id': userId,
+      }),
+    );
+    return jsonDecode(response.body);
+  }
+
+  static Future<Map<String, dynamic>> searchCities({String query = '', String region = 'All', String sort = 'popular'}) async {
+    final Uri uri = Uri.parse('$baseUrl?action=cities&q=${Uri.encodeComponent(query)}&region=${Uri.encodeComponent(region)}&sort=${Uri.encodeComponent(sort)}');
     final response = await http.get(uri);
     return jsonDecode(response.body);
   }
 
-  // Feature 8: Activity Search API
+  static Future<Map<String, dynamic>> recordCityView(int cityId) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl?action=record_city_view'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'city_id': cityId}),
+    );
+    return jsonDecode(response.body);
+  }
+
   static Future<Map<String, dynamic>> searchActivities({String query = '', String category = 'All', double maxCost = 0.0}) async {
     final Uri uri = Uri.parse('$baseUrl?action=activities&q=${Uri.encodeComponent(query)}&category=${Uri.encodeComponent(category)}&max_cost=$maxCost');
     final response = await http.get(uri);
